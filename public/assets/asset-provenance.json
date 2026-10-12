@@ -1,0 +1,162 @@
+[
+  {
+    "file": "confess-base.webp",
+    "title": "CONFESS-47 / 基础立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_4188_confes_1.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      2048,
+      2048
+    ],
+    "dimensions": [
+      1852,
+      1800
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "255dc2fab02f5c5d8638633a8c1c5630b70d35fb0879801ac168a70a87d0c212",
+    "bytes": 382574
+  },
+  {
+    "file": "sankta-base.webp",
+    "title": "信仰搅拌机 / 基础立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_4194_rmixer_1.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      1684,
+      1684
+    ],
+    "dimensions": [
+      1711,
+      1716
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "2258edddfc623d559de446cf6b371fd9e2663bfa865befee58fef1e1600edfe2",
+    "bytes": 414510
+  },
+  {
+    "file": "sankta-elite.webp",
+    "title": "信仰搅拌机 / 精英二立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_4194_rmixer_2.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      2560,
+      2560
+    ],
+    "dimensions": [
+      2000,
+      1536
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "3c20a0be7b5921acda867ca52dc358f16156b73c1aa1037bad0bfbff92211014",
+    "bytes": 896544
+  },
+  {
+    "file": "lemuen-base.webp",
+    "title": "蕾缪安 / 基础立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_4193_lemuen_1.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      1196,
+      1196
+    ],
+    "dimensions": [
+      1228,
+      1223
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "5534daaefd79880b1fcb6fdfc25617c27357e99069cac31b66c8d8f4764d605e",
+    "bytes": 228232
+  },
+  {
+    "file": "lemuen-elite.webp",
+    "title": "蕾缪安 / 精英二立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_4193_lemuen_2.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      2176,
+      2176
+    ],
+    "dimensions": [
+      1836,
+      1800
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "f84c59b6c960072d3e9e10bad80bd870c5c33e011eaf74bdb062bd06e5158027",
+    "bytes": 499724
+  },
+  {
+    "file": "exusiai-base.webp",
+    "title": "新约能天使 / 基础立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_1041_angel2_1.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      1360,
+      1360
+    ],
+    "dimensions": [
+      1392,
+      1379
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "487e300676bbc8076b3cdd70263cea2213c6962c92f58715a54d3d5b2a099745",
+    "bytes": 266830
+  },
+  {
+    "file": "exusiai-elite.webp",
+    "title": "新约能天使 / 精英二立绘",
+    "source_url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/charpack/char_1041_angel2_2.png",
+    "source_repository": "https://github.com/fexli/ArknightsResource",
+    "source_kind": "Third-party public mirror of Arknights game artwork",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      2560,
+      2560
+    ],
+    "dimensions": [
+      1836,
+      1800
+    ],
+    "has_transparency": true,
+    "processing": "Transparent bounds trimmed with 16px transparent padding; proportional resize capped at 2000x1800; WebP quality 92.",
+    "sha256": "f18951da012e5c97c35125c7859058e48813bb14e27cde2d70c789564a8e07ee",
+    "bytes": 674434
+  },
+  {
+    "file": "event-kv.webp",
+    "title": "众生行记 / 活动宣发图",
+    "source_url": "https://patchwiki.biligame.com/images/arknights/d/d8/hbd72vjvbytt00gjzqtu05phu2ujtzt.jpg",
+    "source_page": "https://wiki.biligame.com/arknights/众生行记",
+    "source_kind": "Official promotional image mirrored by Bilibili Arknights Wiki",
+    "rights": "Artwork belongs to Hypergryph and its respective rights holders. Included for local fan-made reference and study.",
+    "original_dimensions": [
+      1560,
+      500
+    ],
+    "dimensions": [
+      1560,
+      500
+    ],
+    "has_transparency": false,
+    "processing": "Proportional resize capped at 2000px; WebP quality 92; original brand marks retained.",
+    "sha256": "ca880acf2ad3a101b67632194257f696d03de71060f97eacea6725ee991f1713",
+    "bytes": 232024
+  }
+]

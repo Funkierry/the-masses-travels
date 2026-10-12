@@ -1,0 +1,27 @@
+{
+  "project": "The Masses' Travels - local interactive adaptation",
+  "asset_rights": "Third-party assets remain under their original rights. No commercial license is granted by this manifest.",
+  "references": [
+    {
+      "url": "https://www.bilibili.com/video/BV15HLdz6E99/",
+      "use": "PV first two minutes: timing, stills, audio, optional comparison video"
+    },
+    {
+      "url": "https://www.bilibili.com/video/BV1WFkwBJEhR/",
+      "use": "Activity UI layout and motion reference only; no included video copy"
+    },
+    {
+      "url": "https://github.com/LBEILC/RhineLabUI",
+      "use": "Interactive adaptation architecture reference; no included source or model files"
+    }
+  ],
+  "generated_content": [
+    "Procedural Three.js cathedral and bird geometry",
+    "SVG geometric emblems and rings",
+    "SVG blueprint plates: numbered flock, haloed figure with feather fans, dotted map silhouettes, hexagon nodes, radial lines",
+    "Canvas construction lines joining the pointer to nearby nodes",
+    "CSS layouts, pixel-mosaic / scan-band / light-wipe transitions",
+    "WebAudio sine-wave UI sounds"
+  ],
+  "assets": []
+}

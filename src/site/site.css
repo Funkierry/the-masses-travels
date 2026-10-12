@@ -1,0 +1,44 @@
+/* Personal site — additions on top of the festival template. */
+.site-backdrop{position:absolute;inset:0;z-index:-5;overflow:hidden;background:#e9ecec}
+.site-backdrop img{position:absolute;left:-4%;top:-10%;width:108%;height:120%;object-fit:cover;opacity:.55;transform:translate(calc(var(--mx)*-14px),calc(var(--my)*-8px));transition:transform 1s ease-out}
+.site .world-veil{background:linear-gradient(90deg,#eff1eff2 0%,#eff1efc0 30%,#eff1ef40 66%,#eff1ef30),linear-gradient(0deg,#eff1ef,transparent 25%,transparent 80%,#eff1efb0)}
+.site.mode-records .site-backdrop img{opacity:.25}
+.site.mode-atlas .site-backdrop{background:#bcc6c8}.site.mode-atlas .site-backdrop img{opacity:0}
+.site.mode-contact .site-backdrop{background:#dcdfe1}
+.site .home-wordmark span:first-child{font-size:.4em;letter-spacing:.02em;margin-bottom:14px}
+.site-credit{font:7px var(--mono)!important;letter-spacing:1px!important;opacity:.7}
+
+/* About */
+.site-bio{font:12px/1.95 var(--cn-serif);color:#3f4a4e;max-width:420px;margin:-12px 0 22px;pointer-events:auto}
+.site .operator-art{inset:-4% -2% -2% 46%}
+.site a.line-button{text-decoration:none}
+
+/* Works panel tags */
+.rp-tags{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
+.rp-tags span{font:9px var(--mono);letter-spacing:1px;padding:3px 8px;border:1px solid var(--line);color:var(--muted)}
+
+/* Skills */
+.skill-list{position:absolute;right:var(--pad);top:16%;z-index:4;width:230px;display:grid;grid-template-columns:1fr;background:#f4f5f3e6;border:1px solid #3a5bc244;padding:6px 0}
+.skill-list button{display:grid;grid-template-columns:26px 1fr 54px;align-items:center;gap:6px;padding:6px 12px;text-align:left;font:12px var(--cn-serif);letter-spacing:1px}
+.skill-list small{font:8px var(--mono);color:var(--cobalt)}
+.skill-list i{display:block;height:3px;background:linear-gradient(90deg,var(--cobalt) calc(var(--l)*100%),#22282b1f calc(var(--l)*100%))}
+.skill-list button:hover,.skill-list button.active{background:#22282b;color:#f3f4f2}.skill-list button.active small{color:#9fb3ff}
+.site #atlas .atlas-tools{right:auto;left:calc(7% + 38px);bottom:4%}
+.site #atlas .atlas-readout{bottom:14%}
+
+/* Contact */
+#contact{overflow:hidden}#contact .cv-root{position:absolute;inset:0}
+#contact .atlas-head{left:var(--pad)}
+#contact .atlas-head h2,#contact .atlas-head p{color:#22282b}
+.contact-card{position:absolute;left:50%;top:50%;z-index:6;width:min(420px,86vw);transform:translate(-50%,-40%);background:#f6f7f5f5;border:1px solid var(--line);box-shadow:0 30px 80px #13234a30;padding:0 26px 22px;opacity:0;pointer-events:none;transition:opacity .5s,transform .7s cubic-bezier(.19,1,.22,1)}
+.contact-card.visible{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.contact-card>small{display:block;margin:0 -26px 18px;padding:9px 26px;background:#22282b;color:#f3f4f2;font:8px var(--mono);letter-spacing:2px}
+.contact-card h3{font:400 30px var(--cn-serif);letter-spacing:6px;margin:0 0 16px}.contact-card h3 em{font:italic 20px var(--serif);letter-spacing:0;color:var(--muted);margin-left:8px}
+.contact-mail{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 14px;border:1px solid var(--cobalt);font:600 16px var(--sans);letter-spacing:.5px;color:var(--cobalt)}
+.contact-mail span{font:9px var(--mono);letter-spacing:1px;color:var(--muted)}.contact-mail:hover{background:var(--cobalt);color:#fff}.contact-mail:hover span{color:#dfe6ff}
+.contact-links{display:flex;gap:16px;margin:16px 0 10px}.contact-links a{font:11px var(--mono);letter-spacing:1px;text-decoration:none;color:var(--ink)}.contact-links a:hover{color:var(--cobalt)}
+.contact-card p{font:9px var(--mono);letter-spacing:1px;color:var(--muted);margin:0}
+#contact .atlas-tools{right:var(--pad);bottom:5%}
+
+@media(max-width:700px){.skill-list{left:6%;right:6%;width:auto;top:auto;bottom:15%;grid-template-columns:1fr 1fr;max-height:30%;overflow:auto}.site #atlas .atlas-readout{display:none}.site #atlas .atlas-tools{left:6%;right:6%}.site-bio{display:none}.site .operator-art{inset:25% -31% 4% 23%}}
+#skill-spec{font:10px/1.9 var(--mono);color:#2b3438;padding:0 12px 12px}

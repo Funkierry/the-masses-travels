@@ -1,0 +1,917 @@
+{
+ "game_install": "local Arknights PC client (Hypergryph Launcher)",
+ "rights": "Artwork and music belong to Hypergryph. Extracted from the owner's local client for this fan study only; not for redistribution.",
+ "assets": [
+  {
+   "name": "map-pano",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_zone1_1..3",
+   "rect": null,
+   "dimensions": [
+    3072,
+    960
+   ],
+   "bytes": 275634,
+   "sha256": "b29814a0510b82445a8e5f06112e719cfc219b6fa72899bad0825daa0319994b"
+  },
+  {
+   "name": "map-pano-sky",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_zone1_1..3 (blurred)",
+   "rect": null,
+   "dimensions": [
+    768,
+    240
+   ],
+   "bytes": 1864,
+   "sha256": "effe419760c9fda986373515b936fb8490213fa1fd8558e55530c3db98c94e30"
+  },
+  {
+   "name": "map-ex",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab",
+   "rect": null,
+   "dimensions": [
+    1024,
+    960
+   ],
+   "bytes": 140720,
+   "sha256": "87a1470bc245e0e6e21409f2cc58dba61d19ae9394f4f307382c3a6adf23bee4"
+  },
+  {
+   "name": "map-s",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab",
+   "rect": null,
+   "dimensions": [
+    1024,
+    960
+   ],
+   "bytes": 193056,
+   "sha256": "594e314cfe78d43f06349d3783f3363a41c1256711c1448584f86383a44ba4c0"
+  },
+  {
+   "name": "human-dec",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_human_dec",
+   "rect": null,
+   "dimensions": [
+    565,
+    144
+   ],
+   "bytes": 20282,
+   "sha256": "262b3b01dba7778fb904a1429905c14f0fcd5a9cc78b4c07110fa9ae5f586604"
+  },
+  {
+   "name": "bird",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_bird",
+   "rect": null,
+   "dimensions": [
+    173,
+    222
+   ],
+   "bytes": 8948,
+   "sha256": "7a155d1f083b4b2c029ac7b88aefdd200a4430caddab225d8cea10816ce8fb50"
+  },
+  {
+   "name": "boss",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_boss",
+   "rect": null,
+   "dimensions": [
+    392,
+    271
+   ],
+   "bytes": 40834,
+   "sha256": "98e669ad7be61ae21a9a6c0a3e8449bac197ec120b3ed52a0f3bf8bb666e8e1a"
+  },
+  {
+   "name": "car-shadow",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_car_shadow",
+   "rect": null,
+   "dimensions": [
+    198,
+    167
+   ],
+   "bytes": 12426,
+   "sha256": "4bcfa4fef417e5dd1c48b03e46e31e31a44fe872d05546e13cd0c25e3e4e344b"
+  },
+  {
+   "name": "color-dec",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_color_dec",
+   "rect": null,
+   "dimensions": [
+    306,
+    78
+   ],
+   "bytes": 2844,
+   "sha256": "94147624d528b82d2efc98efef15f3d20b1ad38ba4d3b4004ed60e64c7093034"
+  },
+  {
+   "name": "doc-mosaic",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: doc_mosaic",
+   "rect": null,
+   "dimensions": [
+    205,
+    400
+   ],
+   "bytes": 7298,
+   "sha256": "c847f8ac7f26d6ecf195c1161e02ede4e5580e36745bac66ed4ac09a3b93825e"
+  },
+  {
+   "name": "doc-bg",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: doc_bg",
+   "rect": null,
+   "dimensions": [
+    307,
+    266
+   ],
+   "bytes": 8972,
+   "sha256": "c79980f9dfeeb41aec368bb56bdede4eadc7d2988adb81448dc68aecd600b6c7"
+  },
+  {
+   "name": "glow-line",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: glow_line",
+   "rect": null,
+   "dimensions": [
+    258,
+    167
+   ],
+   "bytes": 9294,
+   "sha256": "c275ce1d99a012a23a6a4a45e4e067281136f2b588feeaa1f6c4d3152731c3c7"
+  },
+  {
+   "name": "text-n",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_text_n",
+   "rect": null,
+   "dimensions": [
+    45,
+    49
+   ],
+   "bytes": 620,
+   "sha256": "df29a9e53d0ec5f8a2b88fd6c1420e993849abcdf4f38ecb48724e717d4632b6"
+  },
+  {
+   "name": "text-t",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: img_text_t",
+   "rect": null,
+   "dimensions": [
+    55,
+    51
+   ],
+   "bytes": 396,
+   "sha256": "156f563e9895cfe4f96ce551e9c714844c547b87aef9fe424475504384a34ca7"
+  },
+  {
+   "name": "dec-03-03",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: dec_03_03",
+   "rect": null,
+   "dimensions": [
+    59,
+    19
+   ],
+   "bytes": 832,
+   "sha256": "48a8372c208039543b17a28a89d2ff48696917c17d4442b7532415000985223b"
+  },
+  {
+   "name": "dec-04-03",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: dec_04_03",
+   "rect": null,
+   "dimensions": [
+    56,
+    19
+   ],
+   "bytes": 586,
+   "sha256": "2311711a4feeb70b199963358c3e359896960250c3237bcb44cf8d0ecbd0d605"
+  },
+  {
+   "name": "reflect-blue",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    46,
+    36,
+    218,
+    234
+   ],
+   "dimensions": [
+    172,
+    198
+   ],
+   "bytes": 9116,
+   "sha256": "a9cce7b926768d44fb981e257188b74225b129ec0a357881994831ddc19b6ef4"
+  },
+  {
+   "name": "sky-spire",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    46,
+    652,
+    598,
+    789
+   ],
+   "dimensions": [
+    552,
+    137
+   ],
+   "bytes": 11028,
+   "sha256": "67a3d1be3821a17a1cb5e911c93573fd30f1abee235fa03c1ab321a335b3e319"
+  },
+  {
+   "name": "arch-blue",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    600,
+    558,
+    704,
+    681
+   ],
+   "dimensions": [
+    104,
+    123
+   ],
+   "bytes": 4574,
+   "sha256": "f350c194395082167dde11f2125c68c35df1af006d443e2152c0030f5da51f1e"
+  },
+  {
+   "name": "blade-a",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    0,
+    790,
+    916,
+    896
+   ],
+   "dimensions": [
+    916,
+    106
+   ],
+   "bytes": 5694,
+   "sha256": "8a936ea3e1b7bef7ee7bf812a05ec30bc5e2ce8a6675d012c4139a8d309d3add"
+  },
+  {
+   "name": "blade-b",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    20,
+    898,
+    932,
+    996
+   ],
+   "dimensions": [
+    912,
+    98
+   ],
+   "bytes": 16936,
+   "sha256": "ca6459d94028000895c3efa0d9b48c4e8e0d27f05261e05a9e685a47276899ae"
+  },
+  {
+   "name": "blade-c",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    46,
+    520,
+    588,
+    578
+   ],
+   "dimensions": [
+    542,
+    58
+   ],
+   "bytes": 3394,
+   "sha256": "d571c6c35ef9d5b3342e45fcd4afd8d544a3d1cc1b4961f3eff915c5eab90381"
+  },
+  {
+   "name": "blade-d",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    46,
+    413,
+    578,
+    472
+   ],
+   "dimensions": [
+    532,
+    59
+   ],
+   "bytes": 4764,
+   "sha256": "54b465e74e7d1123944b5f1de6c6b8b26cca334fe351007ae6783ab0fb1ca9a2"
+  },
+  {
+   "name": "text-column",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    932,
+    168,
+    1002,
+    522
+   ],
+   "dimensions": [
+    70,
+    354
+   ],
+   "bytes": 5660,
+   "sha256": "c2563a3576725e6549cd5dfc362050637eb289e9c26f653beb6c4e25033b2442"
+  },
+  {
+   "name": "y-ruler",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    932,
+    584,
+    1002,
+    1022
+   ],
+   "dimensions": [
+    70,
+    438
+   ],
+   "bytes": 4202,
+   "sha256": "2470e2880819f79cfcb89ecff272d91804437dbf82417d0c3e811b52a7374939"
+  },
+  {
+   "name": "axis-arrow",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    0,
+    18,
+    46,
+    792
+   ],
+   "dimensions": [
+    46,
+    774
+   ],
+   "bytes": 2964,
+   "sha256": "eb71871b5695a1fbad3d1982e20f57bb068fcd1fa809c78feb02b4f2dff57cb6"
+  },
+  {
+   "name": "text-shrine",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_zone_1_atlas",
+   "rect": [
+    322,
+    262,
+    418,
+    412
+   ],
+   "dimensions": [
+    96,
+    150
+   ],
+   "bytes": 2704,
+   "sha256": "a86e7558fdbcd8303bc2961a4ef4cde12f563c96a1b846a1c31cf7ea9171496c"
+  },
+  {
+   "name": "ex-crown",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone2",
+   "rect": [
+    0,
+    76,
+    824,
+    580
+   ],
+   "dimensions": [
+    824,
+    504
+   ],
+   "bytes": 88946,
+   "sha256": "d9a80d2e51e27cd9af66891493277bcddcb902f9464f657fe27d46345ba84285"
+  },
+  {
+   "name": "arm-hand",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone2",
+   "rect": [
+    608,
+    588,
+    828,
+    716
+   ],
+   "dimensions": [
+    220,
+    128
+   ],
+   "bytes": 3632,
+   "sha256": "ab86b0447519b38f54dab352b583fce2990c018f53094be542112dd3057b9902"
+  },
+  {
+   "name": "hand-white",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone2",
+   "rect": [
+    600,
+    760,
+    740,
+    880
+   ],
+   "dimensions": [
+    140,
+    120
+   ],
+   "bytes": 3118,
+   "sha256": "c0e8b70f171bb2951a42bb618b430c29e2e8c68e168d71c2b03c8d20be0d1b95"
+  },
+  {
+   "name": "star-blue",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone2",
+   "rect": [
+    600,
+    884,
+    744,
+    1024
+   ],
+   "dimensions": [
+    144,
+    140
+   ],
+   "bytes": 2218,
+   "sha256": "31becc1c5c858a53fd540fb32f25e4272ca9094478f49cb994bf9dd4e121854e"
+  },
+  {
+   "name": "cracks",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone2",
+   "rect": [
+    0,
+    552,
+    676,
+    1024
+   ],
+   "dimensions": [
+    676,
+    472
+   ],
+   "bytes": 37746,
+   "sha256": "1b058714ebebdde35fa2aa0e2abc67d45eb4ecac57c5868a9430247444180cea"
+  },
+  {
+   "name": "shard-black",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    0,
+    196,
+    328,
+    328
+   ],
+   "dimensions": [
+    328,
+    132
+   ],
+   "bytes": 5476,
+   "sha256": "3ac7b0e79316950e05c9876b91a5e76218c7370ba08ec8f44da7788c808d3431"
+  },
+  {
+   "name": "stroke-white",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    336,
+    228,
+    532,
+    276
+   ],
+   "dimensions": [
+    196,
+    48
+   ],
+   "bytes": 2846,
+   "sha256": "759d2dde9431db5dfbd6ff2c604f9f967abb0901770a89512d073cf04ca28b75"
+  },
+  {
+   "name": "shard-gray",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    596,
+    208,
+    796,
+    272
+   ],
+   "dimensions": [
+    200,
+    64
+   ],
+   "bytes": 2654,
+   "sha256": "97e258fee8ce8ea9cafd7effde1d3d6d596b66a2c649fa0a40e540fbe00d5f64"
+  },
+  {
+   "name": "arm-a",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    328,
+    280,
+    456,
+    424
+   ],
+   "dimensions": [
+    128,
+    144
+   ],
+   "bytes": 2148,
+   "sha256": "fe9386d0e6268205d3c131eab7dce6333952ca847187a300ff0210bb5f1c5529"
+  },
+  {
+   "name": "rays-white",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    596,
+    272,
+    808,
+    464
+   ],
+   "dimensions": [
+    212,
+    192
+   ],
+   "bytes": 13978,
+   "sha256": "17acb388f39dfbbdeb54ab9bf31ef83d8957b8db4cd9841203369922abc63886"
+  },
+  {
+   "name": "figure-joints",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    4,
+    468,
+    300,
+    1016
+   ],
+   "dimensions": [
+    296,
+    548
+   ],
+   "bytes": 30542,
+   "sha256": "f18db9432edc785f9f7d4b3255ea61e116854704ba7cdeafcfe50d44b3929525"
+  },
+  {
+   "name": "hex-set",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    304,
+    468,
+    488,
+    652
+   ],
+   "dimensions": [
+    184,
+    184
+   ],
+   "bytes": 6868,
+   "sha256": "07b4ed75ed93ffba44bad8e337ff7bab1dd5cf5a2f6e37a1dfde9eaba8f6464b"
+  },
+  {
+   "name": "op-label",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    316,
+    664,
+    572,
+    772
+   ],
+   "dimensions": [
+    256,
+    108
+   ],
+   "bytes": 7094,
+   "sha256": "5e6f3d271ee21498000ad1d096466699d82dba7ac83c8b4cfda4c0dc2b3552ad"
+  },
+  {
+   "name": "arm-b",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: zone_map_act42side_zone3",
+   "rect": [
+    660,
+    952,
+    824,
+    1024
+   ],
+   "dimensions": [
+    164,
+    72
+   ],
+   "bytes": 2036,
+   "sha256": "9887e76b298f3ff8ae4fe7c08d3a6a3b6c5a907c380c1a991d6c97cf800226ce"
+  },
+  {
+   "name": "portal-shrine",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_deco_atlas",
+   "rect": [
+    8,
+    28,
+    132,
+    176
+   ],
+   "dimensions": [
+    124,
+    148
+   ],
+   "bytes": 11738,
+   "sha256": "0d846ac0b5ebd87b73d8e2ca1535f8488808dc49cc9608d864cceeda433c4d7e"
+  },
+  {
+   "name": "portal-rest",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_deco_atlas",
+   "rect": [
+    260,
+    36,
+    380,
+    188
+   ],
+   "dimensions": [
+    120,
+    152
+   ],
+   "bytes": 11360,
+   "sha256": "61f5f28dba5b6c8f2e86a16600e9d88abe674ce0a5f9fccf0cc7840bb99ab784"
+  },
+  {
+   "name": "portal-god",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_deco_atlas",
+   "rect": [
+    4,
+    188,
+    128,
+    344
+   ],
+   "dimensions": [
+    124,
+    156
+   ],
+   "bytes": 11644,
+   "sha256": "e847eeebefd9cd6ae911df8c6a90ac5c81583eda2347d7e6056e65ce83a8b2e0"
+  },
+  {
+   "name": "counter-bar",
+   "source": "retro/permanent_sidestory_32_the_masses_travels.ab :: act42side_map_deco_atlas",
+   "rect": [
+    8,
+    348,
+    352,
+    452
+   ],
+   "dimensions": [
+    344,
+    104
+   ],
+   "bytes": 11826,
+   "sha256": "1e1c0f8c1001acb5b576cc59e3babcc1dc3bdb5261807a789802bcd59676e63b"
+  },
+  {
+   "name": "stage-01",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 26732,
+   "sha256": "0ae5dd732fcf846e59d72c2ad3f9a6592e451fe3af69336e9d92c6589e1c6e7e"
+  },
+  {
+   "name": "stage-02",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 27302,
+   "sha256": "56bc7841760cc02d910fd6c30e2ade9a04cacf2917ed458c8493241a2dcb0e7a"
+  },
+  {
+   "name": "stage-03",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 27832,
+   "sha256": "ff8d6a7900a95e29dd12e373b4fe3dba1d2088f9c5e5ac6fd1d82fe39e39b6d9"
+  },
+  {
+   "name": "stage-04",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 28342,
+   "sha256": "31b9bb67a10ca1f8cc38e037a758a4b635060d47dfb4b3705586bc5a86cf1d05"
+  },
+  {
+   "name": "stage-05",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 32276,
+   "sha256": "2d154269653ada33621938a655367400a9020efc3af189e0c7a445556d675214"
+  },
+  {
+   "name": "stage-06",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 31962,
+   "sha256": "8011ea9224b3b8837e77ea2787d818ea958e0688fe6816cf83ecb328d7d52b01"
+  },
+  {
+   "name": "stage-07",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 32168,
+   "sha256": "a97a0a01870cac391d5f8da913345914a60a558350170c6fc77bd958090b4fd7"
+  },
+  {
+   "name": "stage-08",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 30546,
+   "sha256": "2ca1fc027a8bb619bc98f9f0a94b82d42c4727db2fc48645ceda8e65b17dfc96"
+  },
+  {
+   "name": "stage-09",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 30618,
+   "sha256": "2e54f8fc53abd12cfe9b0ea3b10eccbe5f8ac2573c10e418ff45f96ec7d8b16c"
+  },
+  {
+   "name": "stage-10",
+   "source": "arts/ui/stage_mappreview_h2_act42side_1_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 26576,
+   "sha256": "35367826c0afe673be6904d9d6b17ddedfb19280127b7781c08fabaa4adec9da"
+  },
+  {
+   "name": "stage-ex01",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 29894,
+   "sha256": "22869ecdaf33bd23c39c358614c8dc85b0bd780bf9dd4b39017c8d9501f542b8"
+  },
+  {
+   "name": "stage-ex02",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 33578,
+   "sha256": "2d9801afbdc0e7695e5e8043fbd59b06e01c22fcc4048b64083139128677ab92"
+  },
+  {
+   "name": "stage-ex03",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 32348,
+   "sha256": "7125456c12284c0ff2a2bdd3c09955b9815bff009583e6758923e6cc3281cda6"
+  },
+  {
+   "name": "stage-ex04",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 31896,
+   "sha256": "4fcb7b2a2ee24d7ff8251b731da119549c754ad9becbae00723d877070d139a6"
+  },
+  {
+   "name": "stage-ex05",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 29372,
+   "sha256": "e8bb3f97e09f08d52156a6c036e7677625df6909e2b372f1f959f992ef28f469"
+  },
+  {
+   "name": "stage-ex06",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 30202,
+   "sha256": "935b46f0ac489cef9efc3025ac0802da47b88d86feafaa78e20be2c7102660ae"
+  },
+  {
+   "name": "stage-ex07",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 29986,
+   "sha256": "e3f9120b4cca8b2239a81b953d0b18fb7236de803f019944d63a298df365c017"
+  },
+  {
+   "name": "stage-ex08",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 24710,
+   "sha256": "d8427593a3dabf09d683e1e6d9e7f72aae0c7c8f487bd6f1297ec26cc4e13539"
+  },
+  {
+   "name": "stage-s01",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 31224,
+   "sha256": "e042323713b5cd706810ece0e1c6b7a450236adf3eef7b765812468373ddd04e"
+  },
+  {
+   "name": "stage-s02",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 32254,
+   "sha256": "2f563154b5f5e5515853321610000b9d0e71cb5ac450143af47c2eb296ff51a7"
+  },
+  {
+   "name": "stage-s03",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 30068,
+   "sha256": "ab4b26ba09d9666feb5c46687f26aaf3d7dbc2251836323ea084fae04718ce5e"
+  },
+  {
+   "name": "stage-s04",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 32764,
+   "sha256": "7e62bdcc4e86d499ac3d28f03fe376661ff312089cf5242106c701f03404d045"
+  },
+  {
+   "name": "stage-s05",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 20654,
+   "sha256": "67192347649c2c992afc9efdc76a6deafec816a162d24325984b5795157c90d4"
+  },
+  {
+   "name": "stage-tr01",
+   "source": "arts/ui/stage_mappreview_h2_act42side_a_0.ab",
+   "rect": null,
+   "dimensions": [
+    384,
+    384
+   ],
+   "bytes": 29752,
+   "sha256": "e5d4e797eb718a70b09deb0a9d04a739d9ee88b03c8a06736ebc74c8f6ee5321"
+  },
+  {
+   "name": "bgm-sys",
+   "source": "audio/sound_beta_2/music/act42side/m_act42side_sys.ab :: m_act42side_sys_loop.wav",
+   "processing": "first 96 s, mono, 96 kbit/s MP3",
+   "bytes": 1152313,
+   "sha256": "a99eb3fc35f747283eea730e8ffc28c61f61ef7e405dbdc02187c88cb2182038"
+  }
+ ]
+}
