@@ -3,6 +3,9 @@
 // CSS animation, transition and Web Animation to the same virtual time.
 (()=>{
  const W=window;let vt=0;const dateBase=Date.now();
+ // The real frame clock, kept for one purpose: waiting until the compositor has produced a fresh frame.
+ const realRaf=W.requestAnimationFrame.bind(W);
+ W.__settle=()=>new Promise(r=>realRaf(()=>realRaf(()=>r(0))));
  const RealDate=Date;
  performance.now=()=>vt;
  W.Date=class extends RealDate{constructor(...a){a.length?super(...a):super(dateBase+vt);}static now(){return dateBase+vt;}};

@@ -784,3 +784,20 @@ img.rd[data-near="2"]{animation:rd-in .7s ease both}
 .pl-sweep{animation-duration:12s}
 .plate.leaving{animation:plate-out .75s ease-in both;pointer-events:none}.plate.leaving .pl-sheet{animation:none!important}
 @keyframes plate-out{to{opacity:0}}
+
+/* ═══════════ v10 · collage layer and line weight by depth ═══════════ */
+/* Two hands as in the activity's illustrations: one flat saturated blue reaching down, one white line hand reaching up. */
+.hs.hand-vivid{display:block;right:13%;top:-3%;width:15vw;aspect-ratio:140/120;rotate:165deg;--k:40;background:#2a3fff;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;filter:drop-shadow(0 10px 18px #2a3fff40)}
+.hs.hand-line{left:39%;bottom:9%;width:17vw;rotate:-28deg;opacity:1;--k:30;filter:drop-shadow(0 0 1px #3a5bc2) drop-shadow(0 8px 16px #13234a40)}
+.home-scan .hs.hand-vivid{filter:drop-shadow(0 0 22px #2a3fff80)}
+@media(max-width:700px){.hs.hand-vivid{width:34vw;right:-4%}.hs.hand-line{width:38vw;left:30%}}
+.cl-dove{animation:cl-bob 6s ease-in-out infinite}.cl-dove:nth-child(2n){animation-delay:-2s}.cl-dove:nth-child(3n){animation-delay:-4s}
+@keyframes cl-bob{50%{translate:0 -6px}}
+/* Atlas: hairline construction, medium feathers, heavy figure and bird outlines. */
+.bp-lines *{stroke-width:.75}.bp-echo *{stroke-width:.5}.bp-lines .bp-fan{stroke-width:.9}
+.bp-feather path{stroke-width:1.5}.bp-figure .bp-fill{stroke-width:2.6}.bp-bird .bp-fill{stroke-width:1.7}.bp-rib,.bp-hatch{stroke-width:.7}
+.bp-cross{stroke-width:1.4}
+/* Route: hairline guide and echo, heavier axis, node outlines heaviest. */
+.route-lines .guide{stroke-width:.45}.route-lines .branch-echo path{stroke-width:.6}.route-lines .baseline{stroke-width:2.4}
+.route-node .hex path:not(.hex-echo){stroke-width:3.2}.route-node .hex .hex-echo{stroke-width:1}
+.reduced-motion .cl-dove{animation:none}

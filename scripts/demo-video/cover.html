@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>cover</title>
+<style>
+ /* Video cover, rendered by cover.mjs at the requested size. Query: ?bg=<frame>&v=a|b&w=1920&h=1080 */
+ :root{--ink:#22282b;--paper:#eff1ef;--cobalt:#3a5bc2;--red:#c94b5c}
+ *{box-sizing:border-box;margin:0}
+ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--paper)}
+ .bg{position:absolute;inset:0;background-size:var(--size,cover);background-position:var(--pos,70% 50%);background-repeat:no-repeat;background-color:var(--paper)}
+ .fade{position:absolute;inset:0;background:linear-gradient(90deg,var(--paper) 0,var(--paper) 30%,#eff1efe6 40%,#eff1ef00 62%)}
+ .dots{position:absolute;inset:0;background:radial-gradient(circle,#3a5bc233 1.6px,transparent 1.9px) 0 0/3.2vh 3.2vh;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 40%,transparent 60%);mask-image:linear-gradient(90deg,#000 0,#000 40%,transparent 60%)}
+ svg.ov{position:absolute;inset:0;width:100%;height:100%}
+ .num{position:absolute;left:3.5vw;top:2vh;font:400 52vh/1 "Bodoni MT",Georgia,serif;color:transparent;-webkit-text-stroke:.35vh var(--cobalt);opacity:.28;letter-spacing:-2vh}
+ .tag{position:absolute;left:5vw;top:13vh;background:var(--ink);color:#fff;font:700 2.6vh Consolas,monospace;letter-spacing:.5vh;padding:.8vh 1.6vh}
+ .tag b{color:#9fb3ff;font-weight:700}
+ .title{position:absolute;left:4.6vw;top:19vh;font:900 21vh/1.02 "Noto Serif SC","Source Han Serif SC","SimSun",serif;letter-spacing:1.2vh;color:var(--ink)}
+ .title em{font-style:normal;color:var(--cobalt)}
+ .bar{position:absolute;left:5vw;top:63vh;background:var(--ink);color:#fff;font:900 8.4vh/1 "Microsoft YaHei UI","PingFang SC",sans-serif;letter-spacing:.5vh;padding:1.6vh 2.6vh 1.9vh;box-shadow:1.4vh 1.4vh 0 var(--cobalt)}
+ .sub{position:absolute;left:5.2vw;top:82vh;font:700 3.4vh "Microsoft YaHei UI",sans-serif;color:var(--ink);letter-spacing:.4vh}
+ .sub i{display:inline-block;width:1.2vh;height:1.2vh;background:var(--red);margin:0 1.6vh .4vh;vertical-align:middle;font-style:normal}
+ .mono{position:absolute;left:5.2vw;bottom:4.5vh;font:2.1vh Consolas,monospace;letter-spacing:.6vh;color:#4b5559}
+ .chip{position:absolute;right:3vw;top:4vh;font:900 4vh "Microsoft YaHei UI",sans-serif;color:#fff;background:var(--red);padding:1vh 2vh;transform:rotate(-3deg);box-shadow:0 1vh 3vh #0003}
+ .call{position:absolute;font:700 2.6vh "Microsoft YaHei UI",sans-serif;color:#fff;background:#22282bee;padding:.8vh 1.6vh;white-space:nowrap}
+ /* Mirrored layout: text on the right, artwork on the left. */
+ .right .fade{background:linear-gradient(270deg,var(--paper) 0,var(--paper) 30%,#eff1efe6 40%,#eff1ef00 62%)}
+ .right .dots{-webkit-mask-image:linear-gradient(270deg,#000 0,#000 40%,transparent 60%);mask-image:linear-gradient(270deg,#000 0,#000 40%,transparent 60%)}
+ .right .num{left:auto;right:3vw}.right .tag,.right .bar,.right .sub,.right .mono{left:auto;right:5vw;text-align:right}.right .title{left:auto;right:4.6vw;text-align:right}
+ .right .bar{box-shadow:-1.4vh 1.4vh 0 var(--cobalt)}.right .chip{right:auto;left:3vw;transform:rotate(3deg)}
+ .call small{display:block;font:1.5vh Consolas,monospace;letter-spacing:.3vh;color:#9fb3ff;margin-top:.3vh}
+</style></head>
+<body>
+<div class="bg" id="bg"></div><div class="fade"></div><div class="dots"></div>
+<svg class="ov" id="ov" viewBox="0 0 1920 1080" preserveAspectRatio="none"></svg>
+<span class="num">06</span>
+<span class="tag">ARKNIGHTS <b>·</b> SIDESTORY <b>·</b> 4K60</span>
+<h1 class="title" id="title">众生<br><em>行记</em></h1>
+<div class="bar" id="bar">能玩的平面设计网页</div>
+<div class="sub" id="sub">无立绘<i></i>全手绘图版<i></i>连点触发图形</div>
+<div class="mono">INTERACTIVE GRAPHIC ATLAS · THE MASSES' TRAVELS</div>
+<div class="chip" id="chip">零立绘</div>
+<div id="calls"></div>
+<script>
+ const q=new URLSearchParams(location.search),v=q.get('v')||'a';
+ document.getElementById('bg').style.backgroundImage=`url("${q.get('bg')}")`;
+ if(q.get('pos'))document.documentElement.style.setProperty('--pos',q.get('pos'));
+ if(q.get('size'))document.documentElement.style.setProperty('--size',q.get('size'));
+ if(q.get('side')==='r')document.body.classList.add('right');
+ // Seeded hand-drawn ring and brush, same idea as the site's sketch module.
+ const rng=s=>()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return ((s>>>0)%100000)/100000;};
+ const ring=(cx,cy,R,r,amp=3,sy=1)=>{const a0=r()*6.28,k=1+Math.floor(r()*2),p=r()*6.28,pts=[];for(let i=0;i<=72;i++){const a=a0+(6.28+.32)*i/72,rr=R+Math.sin(a*k+p)*amp+Math.sin(a*3+p*2)*amp*.4;pts.push(`${(cx+Math.cos(a)*rr).toFixed(1)} ${(cy+Math.sin(a)*rr*sy).toFixed(1)}`);}return 'M'+pts.join('L');};
+ const brush=(x1,y1,x2,y2,w,amp)=>{const n=30,L=[],R=[];for(let i=0;i<=n;i++){const t=i/n,x=x1+(x2-x1)*t,y=y1+(y2-y1)*t+Math.sin(t*Math.PI*1.6)*amp,h=w*Math.pow(Math.sin(Math.PI*t),.75)/2;L.push(`${x.toFixed(1)} ${(y-h).toFixed(1)}`);R.unshift(`${x.toFixed(1)} ${(y+h).toFixed(1)}`);}return `M${L.join('L')}L${R.join('L')}Z`;};
+ const r=rng(v==='a'?11:23);
+ // Call-outs point at things in the frame: [x, y, radius, label, en] in 1920×1080 units.
+ const calls=JSON.parse(q.get('calls')||'[]');
+ const R=q.get('side')==='r';let svg=R?`<path d="${brush(820,880,1860,1010,38,-20)}" fill="#3a5bc2" opacity=".9"/><path d="${brush(840,905,1840,1030,6,-18)}" fill="#22282b" opacity=".6"/>`:`<path d="${brush(60,1010,1100,880,38,20)}" fill="#3a5bc2" opacity=".9"/><path d="${brush(80,1030,1060,905,6,18)}" fill="#22282b" opacity=".6"/>`;
+ for(const [x,y,R] of calls)svg+=`<path d="${ring(x,y,R,r,3)}" fill="none" stroke="#fff" stroke-width="9" opacity=".85"/><path d="${ring(x,y,R,r,3)}" fill="none" stroke="#3a5bc2" stroke-width="4.5"/><path d="${ring(x+5,y+3,R+6,r,4)}" fill="none" stroke="#c94b5c" stroke-width="2" opacity=".7"/>`;
+ document.getElementById('ov').innerHTML=svg;
+ document.getElementById('calls').innerHTML=calls.map(([x,y,R,cn,en])=>{const above=y-R*1.05-60,top=above<24?y+R*1.05:above;return `<span class="call" style="left:${(x+R*.75)/19.2}vw;top:${top/10.8}vh">${cn}<small>${en}</small></span>`;}).join('');
+ if(q.get('title'))document.getElementById('title').innerHTML=q.get('title');
+ if(q.get('bar'))document.getElementById('bar').textContent=q.get('bar');
+ if(q.get('sub'))document.getElementById('sub').innerHTML=q.get('sub');
+ if(q.get('chip'))document.getElementById('chip').textContent=q.get('chip');
+</script>
+</body></html>

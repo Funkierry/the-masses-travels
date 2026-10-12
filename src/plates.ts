@@ -1,6 +1,10 @@
 import { rng, BIRD } from './graphics.ts';
 import type { Operator } from './data.ts';
 import { f, TAU, type P, type R, path, arcPts, ring, arc, rule, brush, sweepPts, blade, sparkle, hexPts, poly, inked } from './sketch.ts';
+import { uiFrame, envelope, ticket, dove, flower, sprig, dots, sunburst, pixels, bigCircles, type CT } from './collage.ts';
+
+// The saturated blue of the activity's illustrations, used for small flat accents.
+const VIVID='#2a3fff';
 
 // Graphic plates drawn in place of artwork: a personnel plate per operator, the home key plate and a
 // small plate per record, in the PV and activity UI's graphic language. Lines are drawn by hand rather
@@ -52,7 +56,11 @@ function textBlock(x:number,y:number,text:string,per:number,ink:string,anchor='s
 /* ── Sheets ────────────────────────────────────────────────────────────── */
 // d: parallax depth; blur: depth of field in px (CSS on the page, an SVG filter in an image); cls adds behaviour.
 type Sheet={body:string;d:number;blur?:number;cls?:string;defs?:string};
-function render(sheets:Sheet[],kind:string,label:string,format:'html'|'svg',id:string){
+// Line weight follows depth: far layers are hairlines, near layers and cut-outs are drawn heavy.
+const weight=(d:number)=>d<.3?.6:d<.6?.85:d<1?1.15:1.55;
+const weigh=(s:Sheet)=>({...s,body:s.body.replace(/stroke-width:([\d.]+)/g,(_,v)=>`stroke-width:${(+v*weight(s.d)).toFixed(2)}`)});
+function render(input:Sheet[],kind:string,label:string,format:'html'|'svg',id:string){
+ const sheets=input.map(weigh);
  if(format==='html')return `<div class="plate ${kind}" role="img" aria-label="${label}">${sheets.map(s=>`<svg class="pl-sheet${s.cls?' '+s.cls:''}" viewBox="0 0 1000 1000" style="--d:${s.d}${s.blur?`;--blur:${s.blur}px`:''}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">${s.defs?`<defs>${s.defs}</defs>`:''}${s.body}</svg>`).join('')}<i class="pl-sweep"></i></div>`;
  const blurs=[...new Set(sheets.map(s=>s.blur).filter((b):b is number=>!!b))];
  return `<svg viewBox="0 0 1000 1000" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg"><defs>${blurs.map(b=>`<filter id="${id}-b${String(b).replace('.','_')}" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${b*.8}"/></filter>`).join('')}${sheets.map(s=>s.defs??'').join('')}</defs>${sheets.filter(s=>!s.cls?.includes('pl-construct')).map(s=>`<g${s.blur?` filter="url(#${id}-b${String(s.blur).replace('.','_')})"`:''}>${s.body}</g>`).join('')}</svg>`;
@@ -68,13 +76,15 @@ const ROLE:Record<string,string>={
 export const roleGlyph=(role:string)=>ROLE[role]??ROLE['先锋'];
 
 /* Personnel plate, 1000 × 1000. */
-export function personnelPlate(o:Operator,index:number,T:PlateTheme=PAGE,alt=false,format:'html'|'svg'='html'){
+// omit drops sheets by class (e.g. 'labels', 'collage', 'twinkles') for a quieter rendering such as a cover.
+export function personnelPlate(o:Operator,index:number,T:PlateTheme=PAGE,alt=false,format:'html'|'svg'='html',omit:string[]=[]){
  const id=`pp${index}-${uid++}`,r=rng(index*97+13);const accent=T.accent==='var(--pl-accent)'?o.color:T.accent;
  const ink=alt?T.paper:T.ink,paper=alt?T.cobalt:T.paper,line=alt?T.paper:T.ink;
  const up=o.english.toUpperCase().replace(/[^A-Z]/g,''),initial=up[0],num=String(index+1).padStart(2,'0');
  const orbit=`${o.english.toUpperCase()} · ${o.roleEn} · ${o.tags.join(' · ')} · RHODES ISLAND · LATERANO 1099 · `;
  const C:P=[500,520];
  const arcStart=-2.1+index*.66,arcLen=.5+o.stars*.36;
+ const CTp:CT={ink,paper:alt?'#eff1ef':T.paper,accent,cobalt:alt?'#eff1ef':T.cobalt,vivid:alt?'#eff1ef':VIVID};const CTc:CT={ink:T.ink,paper:T.paper,accent,cobalt:T.cobalt,vivid:VIVID};
  const star=(k:number)=>`<path transform="translate(${80+k*26} 150)" d="M0-9 7 0 0 9-7 0Z" style="fill:${k<o.stars?accent:'none'};stroke:${line};stroke-width:1.2"/>`;
  const sheets:Sheet[]=[
   ...(alt?[{d:.3,body:`<path d="${ring(500,500,432,r,2.4)}" style="fill:${T.cobalt}"/>`}]:[]),
@@ -82,6 +92,7 @@ export function personnelPlate(o:Operator,index:number,T:PlateTheme=PAGE,alt=fal
   {d:.15,blur:3,defs:`<pattern id="${id}-dot" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="2.4" style="fill:${alt?T.paper:accent}"/></pattern><radialGradient id="${id}-fade"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><mask id="${id}-mask"><circle cx="600" cy="400" r="380" fill="url(#${id}-fade)"/></mask>`,
    body:`<rect width="1000" height="1000" fill="url(#${id}-dot)" mask="url(#${id}-mask)" opacity="${alt?.3:.5}"/>
    <text x="-560" y="850" transform="scale(-1 1)" text-anchor="middle" style="font:400 860px ${SERIF};fill:${ink};opacity:.07">${initial}</text>
+   ${bigCircles(500,520,330,r,CTp,1)}${sunburst(500,520,250,470,64,r,CTp,1.2)}
    <path d="${brush(sweepPts(60,820,960,220,60),130,.42)}" style="fill:${accent};opacity:.13"/>
    ${[...Array(4)].map(()=>`<path d="${blade(120+r()*760,140+r()*720,180+r()*260,14+r()*20,r()*TAU,r)}" style="fill:${ink};opacity:${f(.06+r()*.08)}"/>`).join('')}`},
   // Construction: hand-drawn rings, ticks, broken axes, a Y ruler, a text column, registration and crop marks.
@@ -116,6 +127,13 @@ export function personnelPlate(o:Operator,index:number,T:PlateTheme=PAGE,alt=fal
    <path d="${brush(sweepPts(110,770,920,300,26),34,.4)}" style="fill:${accent};opacity:.32"/><path d="${brush(sweepPts(130,790,900,320,18),5,.5)}" style="fill:${ink};opacity:.55"/>
    <text x="880" y="300" style="font:400 150px ${SERIF};fill:${ink};opacity:.16" transform="rotate(180 920 250)">${up[1]??initial}</text>`},
   {d:.85,cls:'flick',body:blocks(r,12,[110,110,780,780],[accent,T.cobalt,ink,alt?T.paper:'#c7cecd'])},
+  // Collage: data windows, a ticket, envelopes, doves, flowers, maths dots and glitch pixels around the disc.
+  {d:.95,cls:'collage',body:`${pixels(170,430,54,26,r)}${dots(250,470,86,6,r,CTc,1.1)}
+   ${uiFrame(58,262,190,92,r,CTc,1.4,`DATA · ${num}`,-3)}${uiFrame(722,238,190,84,r,CTc,1.4,o.roleEn.split(' / ')[0],2)}
+   ${ticket(54,690,214,up.slice(0,9),[`${o.role} · ${o.branch}`,`TAGS  ${o.tags.join(' / ')}`,`STARS ${'★'.repeat(o.stars)}`],r,CTc,1.4,-2)}
+   ${envelope(640,214,1.1,CTc,1.3,-8)}${envelope(318,762,.9,CTc,1.3,10)}
+   ${dove(330,168,.62,CTc,1.4,false,-12)}${dove(700,146,.46,CTc,1.4,true,10)}${dove(866,334,.4,CTc,1.4,false,-20)}${dove(150,610,.5,CTc,1.4,true,8)}
+   ${flower(262,836,1.5,accent,CTc,1)}${flower(292,862,1,VIVID,CTc,1)}${sprig(206,848,1.3,-20,'#4a8f6a',1.4)}${flower(884,566,1.1,VIVID,CTc,1)}${sprig(862,580,1,-150,'#4a8f6a',1.3)}`},
   // The class glyph on its disc, drawn twice like an ink stamp, with a brush mark through it.
   {d:1.05,cls:'pl-glyph',body:`<circle cx="${C[0]}" cy="${C[1]}" r="236" style="fill:${paper}"/>
    ${inked(ring(C[0],C[1],236,r,1.6),`fill:none;stroke:${line};stroke-width:1.6`)}
@@ -134,7 +152,7 @@ export function personnelPlate(o:Operator,index:number,T:PlateTheme=PAGE,alt=fal
   {d:1.5,blur:1.6,body:`${[...Array(3)].map((_,k)=>`<path d="${blade([90,880,700][k],[860,140,930][k],220+r()*140,16+r()*14,r()*TAU,r)}" style="fill:${[ink,T.cobalt,accent][k]};opacity:.62"/>`).join('')}
    <text x="900" y="1040" style="font:400 260px ${SERIF};fill:${T.cobalt};opacity:.22">${up[up.length-1]}</text>`},
   {d:1.3,cls:'twinkles',body:[[170,420,22,accent],[760,250,14,T.cobalt],[640,860,18,ink],[250,880,10,accent]].map(([x,y,s,c])=>`<path class="pl-twinkle" d="${sparkle(+x,+y,+s)}" style="fill:${c}"/>`).join('')},
-  {d:1.3,body:`   <path d="${rule(64,70,274,70,r,0,.6)}" style="stroke:${ink};stroke-width:34;opacity:1"/><rect x="274" y="53" width="14" height="34" style="fill:${accent}"/>
+  {d:1.3,cls:'labels',body:`   <path d="${rule(64,70,274,70,r,0,.6)}" style="stroke:${ink};stroke-width:34;opacity:1"/><rect x="274" y="53" width="14" height="34" style="fill:${accent}"/>
    <text x="78" y="77" style="font:600 17px ${MONO};letter-spacing:3px;fill:${paper}">PERSONNEL ${num}</text>
    ${[...Array(6)].map((_,k)=>star(k)).join('')}
    <text x="66" y="200" style="font:13px ${MONO};fill:${line};opacity:.75">${o.role} · ${o.branch}</text>
@@ -145,12 +163,12 @@ export function personnelPlate(o:Operator,index:number,T:PlateTheme=PAGE,alt=fal
    ${textBlock(936,790,o.note,15,line,'end')}
    ${barcode(r,736,866,200,40,ink)}<text x="736" y="926" style="font:11px ${MONO};fill:${line};opacity:.7">LAT.1099-${num}-${o.stars}</text>`}
  ];
- return render(sheets,`pplate${alt?' alt':''}`,`${o.name} 档案图版`,format,id);
+ return render(sheets.filter(sh=>!omit.some(c=>sh.cls?.split(' ').includes(c))),`pplate${alt?' alt':''}`,`${o.name} 档案图版`,format,id);
 }
 
 /* Home key plate: cobalt disc, halo, seal, brush rays, circular legend and birds leaving the disc. */
 export function homePlate(T:PlateTheme=PAGE,mark='06',legend="LATERANO · 1099 · THE MASSES' TRAVELS · FAITH · ORDER · FREEDOM · SIDESTORY 06 · ",format:'html'|'svg'='html'){
- const id=`hp-${uid++}`,r=rng(61);const C:P=[520,470];
+ const id=`hp-${uid++}`,r=rng(61);const C:P=[520,470];const CT0:CT={ink:T.ink,paper:T.paper,accent:T.accent,cobalt:T.cobalt,vivid:VIVID};
  // Rays as thin tapered slivers rather than ruled lines.
  const rays=[...Array(40)].map((_,i)=>{const a=i/40*TAU+r()*.07,a0=262+r()*24,l=320+r()*190,w=2+r()*5;const p:P[]=[[C[0]+Math.cos(a)*a0,C[1]+Math.sin(a)*a0],[C[0]+Math.cos(a+.004)*(a0+l)/2+ (r()-.5)*3,C[1]+Math.sin(a+.004)*(a0+l)/2],[C[0]+Math.cos(a)*l,C[1]+Math.sin(a)*l]];return `<path class="hp-ray" style="--i:${i};fill:${T.ink};opacity:${f(.25+r()*.5)}" d="${brush(p,w,.25)}"/>`;}).join('');
  const birds=[...Array(9)].map((_,i)=>{const x=580+i*44+r()*30,y=230-i*18+r()*40,s=.32+r()*.38;return `<path class="hp-bird" style="--i:${i}" transform="translate(${f(x)} ${f(y)}) scale(${f(s*(i%3?1:-1))} ${f(s)})" d="${BIRD}"/>`;}).join('');
@@ -158,6 +176,7 @@ export function homePlate(T:PlateTheme=PAGE,mark='06',legend="LATERANO · 1099 �
   {d:.15,blur:3,body:`<text x="-760" y="860" transform="scale(-1 1)" text-anchor="middle" style="font:400 900px ${SERIF};fill:${T.ink};opacity:.06">N</text>
    <path d="${brush(sweepPts(40,860,980,260,70),150,.42)}" style="fill:${T.cobalt};opacity:.1"/>
    ${[...Array(4)].map(()=>`<path d="${blade(100+r()*800,120+r()*760,200+r()*260,16+r()*22,r()*TAU,r)}" style="fill:${T.ink};opacity:${f(.05+r()*.07)}"/>`).join('')}`},
+  {d:.3,body:`${bigCircles(C[0],C[1],360,r,CT0,1)}${sunburst(C[0],C[1],300,520,72,r,CT0,1.3)}`},
   {d:.4,body:`${rays}<g style="fill:none;stroke:${T.ink}"><path class="draw" pathLength="1" d="${ring(C[0],C[1],300,r,2)}" style="stroke-width:1.3"/><path d="${ring(C[0],C[1],302,r,2.6)}" style="stroke-width:.6;opacity:.4"/>
    <path d="${ring(C[0],C[1],268,r,1.4)}" style="stroke-width:.8;stroke-dasharray:2 6"/><path d="${ticks(C[0],C[1],300,96,r)}" style="stroke-width:.9;opacity:.7"/>
    <path d="${brokenAxis(C[0],80,C[0],900,r,5)}${brokenAxis(90,C[1],950,C[1],r,5)}" style="stroke-width:.6;opacity:.35"/></g>
@@ -177,6 +196,12 @@ export function homePlate(T:PlateTheme=PAGE,mark='06',legend="LATERANO · 1099 �
    ${hexCluster(850,690,26,r,{ink:T.ink,paper:T.paper,accent:T.accent,cobalt:T.cobalt},'<circle r="60"/><path d="M0-90V90M-90 0H90"/>',['01','02','03','04','05','06'])}
    ${mosaic(170,300,64,12,r,[T.cobalt,T.accent,T.ink,'#c7cecd'])}${glitchStrip(620,820,300,34,r,[T.ink,T.cobalt,T.accent])}`},
   {d:.95,cls:'flick',body:blocks(r,10,[220,180,620,620],[T.accent,T.ink,T.paper,'#c94b5c'])},
+  {d:.98,cls:'collage',body:`${pixels(790,640,60,30,r)}${pixels(250,250,36,16,r)}${dots(800,300,90,7,r,CT0,1.1)}
+   ${uiFrame(110,560,200,96,r,CT0,1.4,'RECORD · 06',-4)}${uiFrame(760,520,186,88,r,CT0,1.4,'LATERANO',3)}${uiFrame(640,90,170,70,r,CT0,1.4,'SANCTUM',-2)}
+   ${ticket(700,760,230,"THE MASSES'",['SIDESTORY 06 · INTERACTIVE ATLAS','LATERANO 1099 · FAITH / ORDER'],r,CT0,1.4,2)}
+   ${envelope(330,300,1.2,CT0,1.3,-10)}${envelope(860,430,1,CT0,1.3,12)}${envelope(150,700,.9,CT0,1.3,6)}`},
+  {d:1.2,cls:'collage',body:`${dove(240,150,1.35,CT0,1.6,true,-14)}${dove(880,230,1,CT0,1.6,false,12)}${dove(110,430,.85,CT0,1.6,true,-6)}${dove(920,640,.8,CT0,1.6,false,-18)}${dove(350,850,.75,CT0,1.6,true,10)}${dove(640,40,.6,CT0,1.6,false,-8)}
+   ${flower(420,720,1.7,T.accent,CT0,1)}${flower(452,748,1.1,VIVID,CT0,1)}${sprig(366,736,1.5,-24,'#4a8f6a',1.4)}${flower(640,705,1.2,VIVID,CT0,1)}${sprig(660,712,1.2,-160,'#4a8f6a',1.3)}`},
   {d:1.15,body:`<g style="fill:${T.ink}">${birds}</g>${[[820,420,20,T.accent],[300,190,14,T.cobalt],[690,770,16,T.ink]].map(([x,y,s,c])=>`<path class="pl-twinkle" d="${sparkle(+x,+y,+s)}" style="fill:${c}"/>`).join('')}`},
   {d:1.5,blur:1.6,body:`${[...Array(3)].map((_,k)=>`<path d="${blade([110,900,760][k],[880,180,960][k],240+r()*140,18+r()*14,r()*TAU,r)}" style="fill:${[T.ink,T.cobalt,T.accent][k]};opacity:.6"/>`).join('')}`},
   {d:1.35,body:`<text x="76" y="964" style="font:400 300px ${SERIF};fill:none;stroke:${T.cobalt};stroke-width:1.4;opacity:.35">${mark}</text><text x="70" y="960" style="font:400 300px ${SERIF};fill:none;stroke:${T.accent};stroke-width:1.8">${mark}</text>`},

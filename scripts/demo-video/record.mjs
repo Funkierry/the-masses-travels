@@ -5,10 +5,10 @@ import { Mp4Writer } from './mux.mjs';
 import { readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 const dir=new URL('.',import.meta.url).pathname.slice(1);
-const MODE=process.argv[2]??'preview',K=MODE==='4k'?2:.5,W=1920*K,H=1080*K;
+const MODE=process.argv[2]??'preview',UNTIL=Number(process.argv[3]??0),K=MODE==='4k'?2:.5,W=1920*K,H=1080*K;
 // Scratch (browser profile, one still per second) lives in the system temp folder, not in the project.
 const TMP=tmpdir().split(String.fromCharCode(92)).join('/')+'/masses-demo/';mkdirSync(TMP,{recursive:true});
-const OUT=MODE==='4k'?decodeURIComponent(new URL('../../众生行记-演示-4K60.mp4',import.meta.url).pathname.slice(1)):TMP+'preview.mp4';
+const OUT=UNTIL?TMP+`test-${MODE}.mp4`:MODE==='4k'?decodeURIComponent(new URL('../../众生行记-演示-4K60.mp4',import.meta.url).pathname.slice(1)):TMP+'preview.mp4';
 rmSync(TMP+'profile',{recursive:true,force:true});
 const cdp=await launch({profile:TMP+'profile',port:9334});
 await cdp.send('Page.enable');await cdp.send('Runtime.enable');
@@ -32,9 +32,12 @@ const mp4=new Mp4Writer(OUT);mp4.v.w=W;mp4.v.h=H;const PREV=TMP+(MODE==='4k'?'pr
 let F=0;const t0=performance.now();
 async function frame(){
  await ev('__advance(16.6666667)');
+ // Capture only once the compositor has drawn this state; at 4K a screenshot can otherwise return the previous frame.
+ await ev('__settle()');
  const s=await cdp.send('Page.captureScreenshot',{format:'jpeg',quality:MODE==='4k'?95:85,optimizeForSpeed:true});
  if(F%60===0)writeFileSync(PREV+String(F/60).padStart(4,'0')+'.jpg',Buffer.from(s.data,'base64'));
  for(const [k,b] of await eev(`E.push(${JSON.stringify(s.data)})`))mp4.video(Buffer.from(b,'base64'),k);
+ if(UNTIL&&F+1>=UNTIL*60){F++;const fl=await eev('E.flush()');for(const [k,b] of fl.chunks)mp4.video(Buffer.from(b,'base64'),k);mp4.v.desc=Buffer.from(fl.desc,'base64');console.log('test segment',await mp4.finish(),OUT);cdp.proc.kill();process.exit(0);}
  if(++F%300===0)console.log(`${F} frames · ${(F/60).toFixed(0)} s · ${((performance.now()-t0)/F).toFixed(0)} ms/frame`);
 }
 // Pace: pointer travel and holds run at SLOW× their scripted length; card timings stay exact (raw).

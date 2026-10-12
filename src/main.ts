@@ -42,7 +42,7 @@ app.innerHTML=resolveMarkupAssets(`
   <div class="home-geometry">${ring}<span>ἡ ὁδὸς</span></div>
   <div class="home-stack back" aria-hidden="true"><img class="hs rays" src="/assets/game/rays-white.webp" alt=""><img class="hs spire" src="/assets/game/sky-spire.webp" alt=""><img class="hs ruler" src="/assets/game/y-ruler.webp" alt=""><img class="hs column" src="/assets/game/text-column.webp" alt=""><img class="hs reflect" src="/assets/game/reflect-blue.webp" alt=""></div>
   <div class="home-plate plate-host" aria-label="主视觉图版">${homePlate()}<i class="plate-scanline"></i></div>
-  <div class="home-stack front" aria-hidden="true"><img class="hs blade" src="/assets/game/blade-a.webp" alt=""><img class="hs blade2" src="/assets/game/blade-c.webp" alt=""><img class="hs star s1" src="/assets/game/star-blue.webp" alt=""><img class="hs star s2" src="/assets/game/star-blue.webp" alt=""><img class="hs star s3" src="/assets/game/star-blue.webp" alt=""><img class="hs hand" src="/assets/game/hand-white.webp" alt=""></div><span class="home-stamp" aria-hidden="true">E</span>
+  <div class="home-stack front" aria-hidden="true"><img class="hs blade" src="/assets/game/blade-a.webp" alt=""><img class="hs blade2" src="/assets/game/blade-c.webp" alt=""><img class="hs star s1" src="/assets/game/star-blue.webp" alt=""><img class="hs star s2" src="/assets/game/star-blue.webp" alt=""><img class="hs star s3" src="/assets/game/star-blue.webp" alt=""><img class="hs hand" src="/assets/game/hand-white.webp" alt=""><i class="hs hand-vivid"></i><img class="hs hand-line" src="/assets/game/arm-hand.webp" alt=""></div><span class="home-stamp" aria-hidden="true">E</span>
   <div class="home-copy"><span class="eyebrow" data-scramble>ARKNIGHTS / 6TH ANNIVERSARY</span><div class="home-wordmark" aria-label="The Masses' Travels"><span>The</span><span>Masses'</span><span>Travels</span></div><div class="title-cn"><span class="hairline"></span><h1>众生行记</h1><span class="tiny-symbol">✦</span></div><p class="home-quote">若祈祷无用，<br>那我们因何祈祷？</p><div class="home-actions"><button class="primary" data-action="records" data-scan><span>启程</span><small>BEGIN THE ROUTE · ${routeNodes.length} NODES</small>${icon('arrow')}</button><button class="text-button" data-action="explore" data-scan>众生档案 <span>↗</span></button></div></div>
   <nav class="home-dial" aria-label="快速入口">${[['operators','众生','PEOPLE','halo'],['records','行迹','ROUTE','route'],['atlas','图谱','ATLAS','bird']].map(([a,cn,en,ic],i)=>`<button data-action="${a}" data-scan style="--i:${i}"><span class="dial-icon">${icon(ic)}<i></i></span><b>${cn}<small>${en}</small></b></button>`).join('')}</nav>
   <div class="home-caption"><span>01 — 06</span><p>以众生之名<br><small>A JOURNEY TOWARDS THE LIGHT</small></p><button data-action="about" aria-label="关于本项目">${icon('info')}</button></div>
@@ -74,6 +74,8 @@ app.innerHTML=resolveMarkupAssets(`
 
 const $=<T extends HTMLElement=HTMLElement>(s:string)=>document.querySelector<T>(s)!;
 const stage=$('#stage');
+// The flat blue hand is a solid silhouette cut from the game's hand texture; set through assetUrl so the portable build resolves it.
+$('.hand-vivid').style.setProperty('--m',`url("${assetUrl('game/hand-silhouette.webp')}")`);
 let world:World|null=null;
 // ?still (for screenshots and checks): no tweening, every state lands at once.
 const still=new URLSearchParams(location.search).has('still');if(still){settings.motion=false;}

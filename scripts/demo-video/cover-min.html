@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>cover</title>
+<style>
+ /* Minimal cover: one plate as pure graphic form, generous paper, two lines of type. Query: ?svg=<plate.svg>&v=a|b */
+ :root{--ink:#22282b;--paper:#eff1ef;--cobalt:#3a5bc2;--red:#c94b5c}
+ *{margin:0;box-sizing:border-box}
+ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--paper)}
+ .grain{position:absolute;inset:0;background:radial-gradient(circle,#22282b14 1px,transparent 1.3px) 0 0/2.4vh 2.4vh;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 45%,#000);mask-image:linear-gradient(90deg,transparent 0,#000 45%,#000)}
+ .plate{position:absolute;width:var(--size,128vh);aspect-ratio:1;left:var(--x,70vw);top:var(--y,50vh);translate:-50% -50%}
+ svg.ov{position:absolute;inset:0;width:100%;height:100%}
+ .type{position:absolute;left:var(--tx,7.2vw);top:var(--ty,41vh)}
+ .type h1{font:600 8.4vh/1 "Noto Serif SC","Source Han Serif SC","SimSun",serif;letter-spacing:.55em;color:var(--ink);margin-right:-.55em}
+ .type hr{border:0;border-top:1px solid var(--ink);width:var(--rule,24vw);margin:3.6vh 0 2.4vh;opacity:.7}
+ .type p{font:1.6vh Consolas,"Cascadia Mono",monospace;letter-spacing:.7em;color:#4b5559}
+ .b .type{left:50vw;top:auto;bottom:9vh;translate:-50% 0;text-align:center}.b .type hr{margin:3vh auto 2.2vh}
+</style></head>
+<body>
+<div class="grain"></div>
+<img class="plate" id="plate" alt="">
+<svg class="ov" id="ov" viewBox="0 0 1920 1080" preserveAspectRatio="none"></svg>
+<div class="type"><h1>众生行记</h1><hr><p>THE MASSES' TRAVELS</p></div>
+<script>
+ const q=new URLSearchParams(location.search),v=q.get('v')||'a';document.body.classList.add(v);
+ document.getElementById('plate').src=q.get('svg');
+ for(const k of ['size','x','y','tx','ty','rule'])if(q.get(k))document.documentElement.style.setProperty('--'+k,q.get(k));
+ const rng=s=>()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return ((s>>>0)%100000)/100000;};
+ const ring=(cx,cy,R,r,amp=3)=>{const a0=r()*6.28,k=1+Math.floor(r()*2),p=r()*6.28,pts=[];for(let i=0;i<=96;i++){const a=a0+(6.28+.3)*i/96,rr=R+Math.sin(a*k+p)*amp+Math.sin(a*3+p*2)*amp*.4;pts.push(`${(cx+Math.cos(a)*rr).toFixed(1)} ${(cy+Math.sin(a)*rr).toFixed(1)}`);}return 'M'+pts.join('L');};
+ const r=rng(v==='a'?7:19);const W=innerWidth,H=innerHeight,sx=1920/W,sy=1080/H;
+ // Ring and accent positions follow the plate (viewBox is 1920×1080 stretched to the page).
+ const p=document.getElementById('plate').getBoundingClientRect();const cx=(p.left+p.width/2)*sx,cy=(p.top+p.height/2)*sy,R=p.width*.53*sx;
+ document.getElementById('ov').innerHTML=`<path d="${ring(cx,cy,R,r,5)}" fill="none" stroke="#22282b" stroke-width="1.3" opacity=".45"/>
+  <path d="${ring(cx+6,cy+4,R*1.05,r,7)}" fill="none" stroke="#3a5bc2" stroke-width="1" stroke-dasharray="3 9" opacity=".6"/>
+  <rect x="${(cx-R*.78).toFixed(0)}" y="${(cy-R*.66).toFixed(0)}" width="20" height="20" fill="#c94b5c"/>`;
+</script>
+</body></html>
