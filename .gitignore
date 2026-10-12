@@ -10,3 +10,6 @@ _removed/
 *.pem
 *.key
 
+# Local demo recordings and unfinished encoder payloads
+/众生行记-演示-*.mp4
+/众生行记-演示-*.mp4.payload

@@ -1,6 +1,18 @@
 import { assetUrl } from './assets.ts';
 import { BIRD, flock, rng } from './graphics.ts';
 import { clamp } from './util.ts';
+import { wobble } from './sketch.ts';
+
+// Hand-drawn marks on canvas, seeded so they hold still from frame to frame.
+function roughArc(c:CanvasRenderingContext2D,x:number,y:number,rad:number,a0:number,a1:number,seed:number,amp=1.4){
+ const w=wobble(rng(seed));const n=Math.max(8,Math.ceil(Math.abs(a1-a0)*rad/12));
+ for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n,rr=rad+w(a)*amp;i?c.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):c.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}
+}
+const roughRing=(c:CanvasRenderingContext2D,x:number,y:number,rad:number,seed:number,amp=1.2)=>{const a0=rng(seed+3)()*6.283;roughArc(c,x,y,rad,a0,a0+6.283+.25,seed,amp);};
+function roughLine(c:CanvasRenderingContext2D,x1:number,y1:number,x2:number,y2:number,seed:number,over=5,bow=1.8){
+ const r=rng(seed),dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l,o1=over*(.3+r()),o2=over*(.3+r()),b=(r()-.5)*2*bow;
+ c.moveTo(x1-ux*o1,y1-uy*o1);c.quadraticCurveTo((x1+x2)/2-uy*b,(y1+y2)/2+ux*b,x2+ux*o2,y2+uy*o2);
+}
 
 // A PV passage played behind the route map and scrubbed by dragging (PV 00:10–00:16 and after):
 // one bird splits into a tracked flock, a scan glitch cuts to a blueprint plant drawing itself left to
@@ -49,15 +61,15 @@ export class PvSequence{
   // stays clean. Fast drags add a light flicker that fades as soon as the map stops.
   if(s.id!==this.shown){if(this.shown&&this.clock-this.lastBurst>.25){this.burst=BURST;this.lastBurst=this.clock;}this.shown=s.id;}
   this.burst=Math.max(0,this.burst-dt);
-  const g=this.reduced?0:Math.max((this.burst/BURST)**1.5,clamp((this.speed-.18)*.7,0,.3));
+  const g=this.reduced?0:Math.max((this.burst/BURST)**1.5*.6,clamp((this.speed-.22)*.5,0,.2));
   const c=this.ctx;c.clearRect(0,0,this.w,this.h);
   if(g<.02){c.drawImage(this.buf,0,0,this.w,this.h);return;}
-  const bh=this.buf.height/this.h;let y=0;
-  while(y<this.h){const hgt=4+Math.random()*28;const off=(Math.random()-.5)*g*(Math.random()<.3?220:60);c.drawImage(this.buf,0,y*bh,this.buf.width,hgt*bh,off,y,this.w,hgt);if(Math.random()<g*.5){c.fillStyle=Math.random()<.5?BLUE+(g*.35).toFixed(2)+')':`rgba(255,255,255,${(g*.5).toFixed(2)})`;c.fillRect(0,y,this.w,hgt*(.2+Math.random()*.6));}y+=hgt;}
+  // The slice pattern changes ~10 times a second, not every frame, so the glitch never strobes.
+  const bh=this.buf.height/this.h;let y=0;const rr=rng(Math.floor(this.clock*10)+7);
+  while(y<this.h){const hgt=6+rr()*28;const off=(rr()-.5)*g*(rr()<.3?90:36);c.drawImage(this.buf,0,y*bh,this.buf.width,hgt*bh,off,y,this.w,hgt);if(rr()<g*.4){c.fillStyle=rr()<.6?BLUE+(g*.22).toFixed(2)+')':`rgba(255,255,255,${(g*.22).toFixed(2)})`;c.fillRect(0,y,this.w,hgt*(.2+rr()*.6));}y+=hgt;}
   c.fillStyle=`rgba(58,91,194,${(g*.08).toFixed(3)})`;for(let yy=0;yy<this.h;yy+=3)c.fillRect(0,yy,this.w,1);
  }
  // A soft sheet of paper behind the drawing so it reads over the map; dotted like the PV's blueprint plates.
- // Draw a single stage straight to the screen — used by the film's shots.
  drawPaper(c:CanvasRenderingContext2D,box:{x:number;y:number;w:number;h:number},id:string){
   const cx=box.x+box.w*.45,cy=box.y+box.h*.5;const g=c.createRadialGradient(cx,cy,0,cx,cy,box.w*.62);
   const tone=id==='plant'||id==='flock'?'228,233,235':'240,242,240';g.addColorStop(0,`rgba(${tone},.86)`);g.addColorStop(.62,`rgba(${tone},.6)`);g.addColorStop(1,`rgba(${tone},0)`);c.fillStyle=g;c.fillRect(0,0,this.w,this.h);
@@ -74,7 +86,7 @@ export class PvSequence{
    const fresh=tt<.18;c.fillStyle=fresh?'rgba(255,255,255,.95)':'rgba(222,227,229,.88)';c.fill(birdPath);
    if(!fresh){c.lineWidth=1.5/sc;c.strokeStyle=BLUE+'.85)';c.stroke(birdPath);}
    c.restore();
-   if(tt>.6&&i%2===0){const bs=62*bd.s*k;c.strokeStyle=INK+(Math.floor(this.clock*6+i)%9===0?'.15)':'.5)');c.lineWidth=1;c.strokeRect(x-bs/2,y-bs/2,bs,bs);c.fillStyle=BLUE+'.8)';c.font='9px Consolas,monospace';c.fillText(String(bd.n),x+bs/2+3,y-bs/2+8);}
+   if(tt>.6&&i%2===0){const bs=62*bd.s*k;c.strokeStyle=INK+(Math.floor(this.clock*6+i)%9===0?'.15)':'.5)');c.lineWidth=1;const h=bs/2;c.beginPath();roughLine(c,x-h,y-h,x+h,y-h,i*4+1,4,1);roughLine(c,x+h,y-h,x+h,y+h,i*4+2,4,1);roughLine(c,x+h,y+h,x-h,y+h,i*4+3,4,1);roughLine(c,x-h,y+h,x-h,y-h,i*4+4,4,1);c.stroke();c.fillStyle=BLUE+'.8)';c.font='9px Consolas,monospace';c.fillText(String(bd.n),x+bs/2+3,y-bs/2+8);}
   });
  }
  drawPlant(c:CanvasRenderingContext2D,box:{x:number;y:number;w:number;h:number},q:number){
@@ -86,7 +98,7 @@ export class PvSequence{
   c.strokeStyle=BLUE+'.25)';c.beginPath();this.plant.stem.forEach(([u,v],i)=>{if(u>front)return;i?c.lineTo(X(u),Y(v+.012)):c.moveTo(X(u),Y(v+.012));});c.stroke();
   const joints:[number,number][]=[];
   this.plant.leaves.forEach(l=>{const k=clamp((front-l.x)/.09);if(k<=0)return;
-   const bx=X(l.x),by=Y(l.y),ex=X(l.x+l.dx*k),ey=Y(l.y+l.dy*k);c.lineWidth=1.5;c.strokeStyle=BLUE+'.85)';c.beginPath();c.moveTo(bx,by);c.lineTo(ex,ey);c.stroke();joints.push([ex,ey]);
+   const bx=X(l.x),by=Y(l.y),ex=X(l.x+l.dx*k),ey=Y(l.y+l.dy*k);c.lineWidth=1.5;c.strokeStyle=BLUE+'.85)';c.beginPath();roughLine(c,bx,by,ex,ey,l.n*13,2,1.4);c.stroke();joints.push([ex,ey]);
    if(k<.45)return;const kk=(k-.45)/.55;
    c.save();c.translate(ex,ey);c.rotate(l.rot);
    if(l.kind==='leaf'){const L=l.len*box.w,W=L*.22;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(L*.5,-W*2,L*kk,0);c.quadraticCurveTo(L*.5,W*2*kk,0,0);c.fillStyle='rgba(226,231,233,.6)';c.fill();c.stroke();c.strokeStyle=BLUE+'.3)';c.beginPath();c.moveTo(0,0);c.lineTo(L*kk*.9,0);c.stroke();}
@@ -96,8 +108,8 @@ export class PvSequence{
   });
   // Construction rings pop in at joints and get linked once the drawing is mostly done.
   const ringsOn=Math.floor(clamp((q-.45)/.5)*joints.length);
-  for(let i=0;i<ringsOn;i++){const [x,y]=joints[i*2%joints.length];const age=(q-.45)/.5*joints.length-i;c.strokeStyle=INK+'.6)';c.lineWidth=age<.6?2:1;c.beginPath();c.arc(x,y,age<.6?18:12,0,Math.PI*2);c.stroke();
-   if(i>0){const [px,py]=joints[(i-1)*2%joints.length];c.lineWidth=1;c.strokeStyle=INK+'.4)';c.beginPath();c.moveTo(px,py);c.lineTo(x,y);c.stroke();}}
+  for(let i=0;i<ringsOn;i++){const [x,y]=joints[i*2%joints.length];const age=(q-.45)/.5*joints.length-i;c.strokeStyle=INK+'.6)';c.lineWidth=age<.6?2:1;c.beginPath();roughRing(c,x,y,age<.6?18:12,i*17+5,.9);c.stroke();
+   if(i>0){const [px,py]=joints[(i-1)*2%joints.length];c.lineWidth=1;c.strokeStyle=INK+'.4)';c.beginPath();roughLine(c,px,py,x,y,i*29+7,8,3);c.stroke();}}
   c.lineWidth=1;
  }
  drawHalo(c:CanvasRenderingContext2D,box:{x:number;y:number;w:number;h:number},q:number){
@@ -111,7 +123,7 @@ export class PvSequence{
   c.beginPath();c.arc(cx,cy-205*S,34*S,0,Math.PI*2);c.moveTo(cx-50*S,cy-150*S);c.quadraticCurveTo(cx-80*S,cy-80*S,cx-130*S,cy+300*S);c.lineTo(cx+130*S,cy+300*S);c.quadraticCurveTo(cx+80*S,cy-80*S,cx+50*S,cy-150*S);c.closePath();c.fillStyle='rgba(230,234,236,.9)';c.fill();c.strokeStyle=BLUE+'.8)';c.stroke();c.restore();
   c.strokeStyle=BLUE+'.8)';c.beginPath();c.moveTo(cx-16*S,cy-205*S);c.lineTo(cx+16*S,cy-205*S);c.moveTo(cx,cy-221*S);c.lineTo(cx,cy-189*S);c.stroke();
   [[.2,-.3,90,180],[.28,.1,70,240],[.66,-.4,100,140],[.72,.05,70,110]].forEach(([u,v,w,h],i)=>{if(q<.35+i*.12)return;const x=box.x+box.w*u,y=cy+box.h*v;for(let e=2;e>=0;e--){c.fillStyle=BLUE+[.25,.5,.9][e]+')';c.beginPath();c.moveTo(x-e*7,y+e*9);for(let t=0;t*14<h*S;t++)c.lineTo(x+w*S+(t%2?10:0)-e*7,y+t*14+e*9);c.lineTo(x-e*7,y+h*S+e*9);c.closePath();c.fill();}});
-  c.strokeStyle=INK+'.3)';c.lineWidth=1;c.beginPath();c.arc(box.x+box.w*.15,cy,box.h*.36,0,Math.PI*2*ease(q/.5));c.stroke();c.beginPath();c.arc(box.x+box.w*.78,cy,box.h*.3,0,Math.PI*2*ease((q-.2)/.5));c.stroke();
+  c.lineWidth=1;for(const [k,dx,dy] of [[.3,0,0],[.12,2.4,1.6]]){c.strokeStyle=INK+k+')';c.beginPath();roughArc(c,box.x+box.w*.15+dx,cy+dy,box.h*.36,-1.4,-1.4+Math.PI*2.06*ease(q/.5),41,2.4);c.stroke();c.beginPath();roughArc(c,box.x+box.w*.78+dx,cy+dy,box.h*.3,.8,.8+Math.PI*2.06*ease((q-.2)/.5),43,2.2);c.stroke();}
  }
  drawHands(c:CanvasRenderingContext2D,box:{x:number;y:number;w:number;h:number},q:number){
   const [L,R]=this.handImgs;if(!L||!R||!this.greys[1])return;const gap=1-ease(q/.85);
@@ -120,8 +132,8 @@ export class PvSequence{
   const blue=q<.55?1:Math.max(0,1-(q-.55)*3);
   for(const [grey,tint,x,y,w,h] of [[this.greys[0],this.hands[0],lx,ly,lw,lh],[this.greys[1],this.hands[1],rx,ry,rw,rh]] as const){c.globalAlpha=.9;c.drawImage(grey,x,y,w,h);c.globalAlpha=blue*.95;c.drawImage(tint,x,y,w,h);c.globalAlpha=1;}
   const lt=[lx+.955*lw,ly+.235*lh],rt=[rx+.335*rw,ry+.27*rh];
-  c.strokeStyle=INK+'.5)';c.lineWidth=1;for(const [x,y,r] of [[lt[0],lt[1],8],[lx+.66*lw,ly+.37*lh,lw*.17],[rt[0],rt[1],8],[rx+.5*rw,ry+.38*rh,rw*.14]]){c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.stroke();}
-  c.setLineDash([3,4]);c.strokeStyle=BLUE+'.7)';c.beginPath();c.moveTo(lt[0],lt[1]);c.lineTo(rt[0],rt[1]);c.stroke();c.setLineDash([]);
+  c.strokeStyle=INK+'.5)';c.lineWidth=1;[[lt[0],lt[1],8],[lx+.66*lw,ly+.37*lh,lw*.17],[rt[0],rt[1],8],[rx+.5*rw,ry+.38*rh,rw*.14]].forEach(([x,y,r],k)=>{c.beginPath();roughRing(c,x,y,r,k*11+61,r>20?2:.6);c.stroke();});
+  c.setLineDash([3,4]);c.strokeStyle=BLUE+'.7)';c.beginPath();roughLine(c,lt[0],lt[1],rt[0],rt[1],77,10,4);c.stroke();c.setLineDash([]);
   const word='COVENANT';c.font=`400 ${Math.round(box.h*.06)}px "Bodoni MT",Georgia,serif`;c.fillStyle=INK+'.85)';const shown=Math.floor(clamp((q-.4)/.5)*word.length);c.fillText(word.slice(0,shown),box.x+box.w*.34,box.y+box.h*.66);
  }
  drawCaption(c:CanvasRenderingContext2D,box:{x:number;y:number;w:number;h:number},p:number){

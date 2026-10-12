@@ -617,3 +617,170 @@ img.rd[data-near="2"]{animation:rd-frames .5s steps(1)}.route-layer.fore img.rd[
 @media(max-width:1100px){.operator-art.plate-host{inset:24% -4% 8% 38%}.home-plate{inset:14% -6% 10% 36%}}
 @media(max-width:700px){.operator-art.plate-host{inset:55% -12% 9% -12%;opacity:.95}.home-plate{inset:20% -30% 14% 6%;opacity:.62}}
 .reduced-motion .pl-sheet,.reduced-motion .pl-twinkle,.reduced-motion .hp-bird{animation:none!important}.reduced-motion .pl-sweep{display:none}
+
+/* ═══════════ v7 · route & atlas: hit areas, hand-drawn lines ═══════════ */
+/* Parallax layers are decoration only: they never take the pointer, so the fore layer can't swallow a node's click. */
+.route-layer,.route-layer *{pointer-events:none}
+.route-view:not(.dragging) .route-layer.main .route-node,.route-view:not(.dragging) .route-layer.main .route-node *{pointer-events:auto}
+.route-node::before{content:'';position:absolute;inset:calc(var(--u)*-1.6) calc(var(--u)*-1.2);pointer-events:auto}
+.route-head,.route-counter,.route-seq-bar,.rs-label{pointer-events:none}.route-seq-bar .rs-track,.route-seq-bar button{pointer-events:auto}
+/* Route lines: pencil guide under the axis, faint offset pass under each branch, branches light on hover. */
+.route-lines .guide{stroke:var(--cobalt);stroke-width:.7;opacity:.4}
+.route-lines .branch-echo path{stroke:var(--cobalt);stroke-width:1;opacity:.45}
+.route-lines .branches path{transition:stroke .3s}.route-lines .branches path.hot{stroke:var(--cobalt)}
+.route-node .hex .hex-echo{fill:none;stroke:var(--cobalt);stroke-width:1.3;opacity:.6}
+.rn-lock{position:absolute;left:calc(var(--u)*-1.8);top:50%;width:calc(var(--u)*10);height:calc(var(--u)*10);margin-top:calc(var(--u)*-5);fill:none;stroke:var(--cobalt);stroke-width:1.6;opacity:0;scale:.6;transition:opacity .25s,scale .35s cubic-bezier(.2,1.4,.4,1);z-index:1;overflow:visible}
+.route-node .rn-lock{pointer-events:none!important}
+.route-node:hover .rn-lock,.route-node:focus-visible .rn-lock,.route-node.active .rn-lock,.route-node.pinged .rn-lock{opacity:1;scale:1;animation:pl-spin 9s linear infinite}
+.rn-tip{position:absolute;left:calc(var(--u)*6.4);bottom:calc(100% + var(--u)*.8);white-space:nowrap;background:#22282bf0;color:#f3f4f2;padding:4px 9px;font:12px var(--cn-serif);opacity:0;translate:0 6px;transition:opacity .2s,translate .25s;z-index:4}
+.route-node .rn-tip{pointer-events:none!important}
+.rn-tip small{display:block;font:8px var(--mono);letter-spacing:1px;opacity:.65}
+.route-node:hover .rn-tip,.route-node:focus-visible .rn-tip{opacity:1;translate:0 0}
+.route-node.pinged::after{content:attr(data-dist);position:absolute;left:calc(var(--u)*7);top:calc(100% + 3px);font:9px var(--mono);color:var(--cobalt);background:#fff;padding:1px 5px;white-space:nowrap;animation:ping-label 1.9s both}
+@keyframes ping-label{0%{opacity:0}10%,80%{opacity:1}100%{opacity:0}}
+.route-node.pinged .hex{animation:ping-hex .3s steps(1) 4}
+@keyframes ping-hex{50%{filter:brightness(1.7)}}
+/* Survey pulse. */
+.route-pulse{position:absolute;width:280px;height:280px;margin:-140px 0 0 -140px;pointer-events:none;z-index:5}
+.route-pulse svg{width:100%;height:100%;overflow:visible;fill:none;stroke:var(--cobalt);stroke-width:1.4}
+.route-pulse path{transform-box:view-box;transform-origin:50% 50%;animation:pulse-ring 1.6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--k,0)*.12s)}
+.route-pulse .rp-cross{animation:none}
+@keyframes pulse-ring{from{scale:.2;opacity:1}to{scale:1.35;opacity:0}}
+.route-pulse span{position:absolute;left:56%;top:38%;white-space:nowrap;font:9px var(--mono);letter-spacing:1px;color:#fff;background:var(--cobalt);padding:2px 6px;animation:ping-label 1.7s both}
+/* Pins dropped on the map, joined in order. */
+.route-layer>.route-pins{left:0;top:0;width:100%;height:100%}
+.route-pin-lines{position:absolute;left:0;top:0;height:100%;overflow:visible}
+.route-pin-lines path{fill:none;stroke:var(--cobalt);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-dasharray:.01 .007;animation:pl-draw .6s both}
+.route-pin{position:absolute;left:calc(var(--u)*var(--px));top:calc(var(--u)*var(--py));width:0;height:0}
+.route-pin svg{position:absolute;width:calc(var(--u)*5);height:calc(var(--u)*5);left:calc(var(--u)*-2.5);top:calc(var(--u)*-2.5);overflow:visible;fill:none;stroke:var(--cobalt);stroke-width:1.6;animation:pin-in .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pin-in{from{scale:2.2;opacity:0}}
+.route-pin b,.route-pin small{position:absolute;left:calc(var(--u)*2.6);white-space:nowrap;font:600 9px var(--mono);letter-spacing:1px}
+.route-pin b{top:-20px;background:var(--ink);color:#fff;padding:1px 5px}.route-pin small{top:-4px;color:var(--cobalt);font-weight:400}
+.route-tools{position:absolute;left:calc(var(--pad) + 250px);bottom:calc(5% + 8px);display:flex;flex-direction:column;align-items:flex-start!important;gap:14px;align-items:center;font:9px var(--mono);letter-spacing:1px;color:var(--muted);z-index:6}
+.route-tools button{font:9px var(--mono);letter-spacing:1px;color:var(--ink);background:#fffc;border:1px solid var(--line);padding:4px 10px;cursor:pointer}
+.route-tools button b{color:var(--cobalt)}
+@media(max-width:700px){.route-tools span{display:none}.route-tools{left:auto;right:6%;bottom:auto;top:calc(3% + 54px)}}
+
+/* Atlas: ink echo, brush accents, the wind lens and construction notes. */
+.bp-echo *{opacity:.2!important}
+.bp-brush path{fill:#3a5bc2;opacity:.42;stroke:none}
+.run .bp-brush path{animation:bp-brush-in 1.6s both .9s}
+@keyframes bp-brush-in{from{opacity:0}}
+.inverted .bp-brush path{fill:#eef2ff}
+.bp-fig-echo{fill:none;stroke:#3a5bc2;stroke-width:1.2;opacity:.45}
+.p0 .bp-bird{transition:translate .6s cubic-bezier(.2,.9,.3,1)}
+.atlas-lens{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .25s;z-index:3}
+.atlas-lens.visible{opacity:1}
+.atlas-lens svg{width:100%;height:100%;overflow:visible;fill:none;stroke:#3a5bc2;stroke-width:1.4;animation:pl-spin 14s linear infinite}
+.atlas-lens .al-ticks{stroke-width:1}
+.atlas-lens span{position:absolute;left:80%;top:6%;font:9px var(--mono);letter-spacing:1px;color:#3a5bc2;white-space:nowrap}
+.atlas-stage:not([data-plate="0"]) .atlas-lens{display:none}
+.bp-note path{fill:none;stroke:#3a5bc2;stroke-width:1.6}
+.bp-note .nt-echo{opacity:.3}.bp-note .nt-cross{stroke-width:.9;opacity:.7}
+.bp-note .nt-link{stroke-width:1.2;stroke-dasharray:1;animation:pl-draw .6s cubic-bezier(.6,0,.2,1) both}
+.bp-note text{font:600 15px Consolas,monospace;fill:#3a5bc2}
+.bp-note .nt-dist{font-size:13px;fill:#22282b;opacity:0;transition:opacity .3s}
+.atlas-stage.measure .bp-note .nt-dist{opacity:1}
+.bp-note{transform-box:fill-box;transform-origin:center;animation:note-in .45s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes note-in{from{opacity:0;scale:1.6}}
+.inverted .bp-note path{stroke:#eef2ff}.inverted .bp-note text{fill:#eef2ff}
+.reduced-motion .rn-lock,.reduced-motion .atlas-lens svg{animation:none!important}
+.bp-feather .bp-feather-echo{fill:none!important;stroke:#3a5bc2;stroke-width:1;opacity:.35}
+
+/* ═══════════ v8 · figures, hidden points, sanctum overlay ═══════════ */
+/* A closed figure: fill, rays burst, edges ink in one by one, the ring draws, vertices spark, the label rises. */
+.sigil .sg-fill{fill:var(--cobalt,#3a5bc2);opacity:.1;animation:sg-fill 1.2s both}
+@keyframes sg-fill{0%{opacity:0}30%{opacity:.32}100%{opacity:.1}}
+.sigil .sg-rays{fill:#3a5bc2;transform-box:fill-box;transform-origin:center;animation:sg-rays 1.4s cubic-bezier(.2,.9,.2,1) both}
+@keyframes sg-rays{0%{scale:.2;opacity:0}35%{opacity:.9}100%{scale:1;opacity:.28}}
+.sigil .sg-edge{fill:#3a5bc2;animation:sg-edge .5s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(.15s + var(--i)*.12s)}
+@keyframes sg-edge{from{opacity:0;filter:blur(3px)}}
+.sigil .sg-ring{fill:none;stroke:#3a5bc2;stroke-dasharray:1;animation:pl-draw 1s cubic-bezier(.6,0,.2,1) both .3s}
+.sigil .sg-ring2{fill:none;stroke:#3a5bc2;opacity:.6;transform-box:fill-box;transform-origin:center;animation:pl-spin 30s linear infinite}
+.sigil .sg-spark{fill:#3a5bc2;transform-box:fill-box;transform-origin:center;animation:sg-spark .9s cubic-bezier(.2,1.6,.4,1) both,pl-tw 3s ease-in-out infinite 1s;animation-delay:calc(.4s + var(--i)*.1s),calc(1.2s + var(--i)*.3s)}
+@keyframes sg-spark{from{scale:0;rotate:-90deg}}
+.sigil .sg-label{fill:#22282b;font-family:var(--cn-serif);letter-spacing:.2em;animation:sg-label .8s both .6s}
+@keyframes sg-label{from{opacity:0;translate:0 6px}}
+.route-sigils{position:absolute;left:0;top:0;height:100%;overflow:visible}
+.figure-flash::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:7;background:radial-gradient(circle at 45% 50%,#3a5bc244,transparent 60%),repeating-linear-gradient(0deg,#3a5bc214 0 2px,transparent 2px 5px);animation:fig-flash .9s steps(6) both}
+@keyframes fig-flash{0%{opacity:0}15%{opacity:1}40%{opacity:.4}55%{opacity:.9}100%{opacity:0}}
+.route-pin-marks{position:absolute;inset:0}
+/* Atlas plate 02: hidden points, the halo answering the figure, the orbits turning. */
+.bp-targets [data-target]{opacity:0;transition:opacity .35s}
+.bp-targets [data-target] path{fill:none;stroke:#3a5bc2;stroke-width:1.2;stroke-dasharray:3 5}
+.bp-targets [data-target] text{font:11px Consolas,monospace;fill:#3a5bc2;letter-spacing:1px}
+.bp-targets .near{opacity:.75}.bp-targets .hit{opacity:1}.bp-targets .hit path{stroke-dasharray:none;stroke-width:1.8}
+.atlas-stage:not([data-plate="1"]) .bp-targets{display:none}
+.bp-note.snapped .nt-ring{stroke-width:2.6}
+.sanctified .bp-halo{stroke:#3a5bc2!important;stroke-width:5!important;filter:drop-shadow(0 0 10px #3a5bc2);animation:halo-pulse 2.4s ease-in-out infinite}
+@keyframes halo-pulse{50%{stroke-width:2.5;opacity:.7}}
+.sanctified .bp-figure .bp-fill{fill:#eef2ff;transition:fill 1s}
+.sanctified .bp-echo *{opacity:.45!important}
+.orbited .bp-brush path{animation:orbit-glow 2.6s ease-in-out infinite}.orbited .bp-lines:not(.bp-echo) *{stroke-width:1.8}
+@keyframes orbit-glow{0%,100%{opacity:.5}50%{opacity:1}}
+.atlas-stage.figure-flash::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;background:radial-gradient(circle at 50% 40%,#ffffff88,transparent 55%);animation:fig-flash .9s steps(6) both}
+
+/* Sanctum overlay: dimension marks while inspecting; light-path markers and beam chain. */
+.sanctum-overlay{position:absolute;inset:0;pointer-events:none;z-index:1}
+.so-svg{width:100%;height:100%;overflow:visible}
+.so-annot path{fill:none;stroke:var(--cobalt);stroke-width:1.2}
+.so-annot .so-crop{stroke-width:1.5}.so-annot .so-ring{stroke-width:1.4}.so-annot .so-lead{stroke-width:1;opacity:.8}
+.so-t{font:11px var(--mono);letter-spacing:1px;fill:var(--cobalt)}.so-t.big{font:600 15px var(--cn-serif);letter-spacing:3px;fill:var(--ink)}.so-t.dim{fill:var(--muted)}
+.so-light{opacity:0;transition:opacity .4s}.light-mode .so-light{opacity:1}
+.so-mark{pointer-events:auto;cursor:pointer}
+.so-mark .so-hit{fill:transparent}
+.so-mark path{fill:none;stroke:var(--cobalt);stroke-width:1.6}.so-mark .echo{opacity:.3}.so-mark .so-mark-cross{stroke-width:1;opacity:.7}
+.so-mark text{font:600 13px var(--cn-serif);letter-spacing:2px;fill:var(--ink)}.so-mark text.en{font:9px var(--mono);letter-spacing:1px;fill:var(--muted)}
+.so-mark:hover .so-mark-ring{stroke-width:2.6}
+.so-mark .so-mark-ring{transform-box:fill-box;transform-origin:center;transition:scale .3s cubic-bezier(.2,1.4,.4,1)}
+.so-mark:hover .so-mark-ring:not(.echo){scale:1.25}
+.so-mark.lit .so-mark-ring{fill:#3a5bc233;stroke-width:2.4;animation:pl-tw 1.6s ease-in-out infinite}
+.so-chain{fill:none;stroke:var(--cobalt);stroke-width:2}
+.so-chain.brush{fill:#3a5bc2;stroke:none;filter:drop-shadow(0 0 8px #6f8dff)}
+.so-band{fill:none;stroke:var(--cobalt);stroke-width:1.2;stroke-dasharray:5 6;opacity:.7}
+.so-burst{opacity:0;fill:#3a5bc2}
+.so-burst .so-burst-ring{fill:none;stroke:#3a5bc2;stroke-width:2}
+.solved .so-burst{animation:so-burst 2.2s cubic-bezier(.2,.9,.2,1) both}
+@keyframes so-burst{0%{opacity:0;scale:.2}25%{opacity:1}100%{opacity:.35;scale:1}}
+.miss .so-light{animation:so-miss .4s steps(2)}
+@keyframes so-miss{25%{translate:-6px 0}50%{translate:5px 0}75%{translate:-3px 0}}
+#light-toggle.active{background:var(--cobalt);color:#fff}
+.reduced-motion .sigil *,.reduced-motion .so-light *{animation:none!important}
+
+/* ═══════════ v9 · calm motion: no hard cuts, no strobing ═══════════ */
+/* Every held-frame flicker above is replaced by an eased fade at lower contrast; nothing changes brightness
+   more than about twice a second. */
+#transition-fx .fx-veil{background:linear-gradient(105deg,transparent 30%,#ffffff40 43%,#f5f7ff70 50%,#ffffff40 57%,transparent 70%);animation-duration:1.15s}
+.fx-frame{animation:frame-soft 1.1s ease-in-out both;animation-delay:calc(.05s + var(--f)*.16s)}
+@keyframes frame-soft{0%{opacity:0}40%{opacity:.32}100%{opacity:0}}
+#transition-fx .fx-block,.fx-block{animation:block-soft 1s ease-in-out both;animation-delay:calc(.08s + var(--f,0)*.12s)}
+@keyframes block-soft{0%{opacity:0;translate:-8px 0}40%{opacity:.45}100%{opacity:0;translate:8px 0}}
+.fx-bar{animation:bar-soft .9s ease-in-out both}
+@keyframes bar-soft{0%,100%{opacity:0}45%{opacity:.4}}
+.op-glitch b{animation:op-soft 1.1s ease-in-out both calc(var(--j)*.035s)}
+@keyframes op-soft{0%{opacity:0}35%{opacity:.4}100%{opacity:0}}
+.run .bp-echo{animation:echo-soft .8s ease both calc(.4s + var(--i,0)*.1s)}
+@keyframes echo-soft{from{opacity:0}}
+.rd.glitch{animation:rd-breathe 6s ease-in-out infinite}
+@keyframes rd-breathe{50%{opacity:.72}}
+img.rd[data-near="2"]{animation:rd-in .7s ease both}
+@keyframes rd-in{from{opacity:.55}}
+.covenant.touch .cv-hand img{animation:none}
+.covenant.touch .cv-flash{animation:flash-soft 1.2s ease-out both}
+@keyframes flash-soft{0%{opacity:0}20%{opacity:.45}100%{opacity:0}}
+.pl-sheet.flick{animation:pl-breathe 7s ease-in-out infinite}
+.assemble .pl-sheet.flick{animation:pl-in 1s cubic-bezier(.19,1,.22,1) both calc(var(--d)*.16s),pl-breathe 7s ease-in-out infinite 1s}
+@keyframes pl-breathe{0%,100%{opacity:1}50%{opacity:.72}}
+.assemble .pl-block{animation:pl-block-soft .9s cubic-bezier(.19,1,.22,1) both;animation-delay:calc(.3s + var(--k)*.05s)}
+@keyframes pl-block-soft{from{opacity:0;translate:10px 0}}
+.route-node.pinged .hex{animation:ping-soft 1.1s ease-in-out both}
+@keyframes ping-soft{40%{filter:brightness(1.3)}}
+.figure-flash::after,.atlas-stage.figure-flash::after{background:radial-gradient(circle at 45% 50%,#3a5bc22e,transparent 62%);animation:fig-soft 1.4s ease-out both}
+@keyframes fig-soft{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.miss .so-light{animation:miss-soft .5s ease-in-out}
+@keyframes miss-soft{30%{translate:-4px 0}65%{translate:3px 0}}
+.route-glitch i{opacity:.4;animation:rg-soft .38s ease-in-out both}
+@keyframes rg-soft{0%,100%{opacity:0}50%{opacity:.4}}
+.pl-sweep{animation-duration:12s}
+.plate.leaving{animation:plate-out .75s ease-in both;pointer-events:none}.plate.leaving .pl-sheet{animation:none!important}
+@keyframes plate-out{to{opacity:0}}

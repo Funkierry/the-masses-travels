@@ -1,6 +1,8 @@
 // Hand-drawn SVG vocabulary taken from the PV and the activity map: numbered bird outlines,
 // blueprint angels, dotted silhouettes with halos, hexagon operation nodes and rulers.
 
+import { ring, rule, brush, arcPts } from './sketch.ts';
+
 export function rng(seed:number){let s=seed>>>0||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return ((s>>>0)%100000)/100000;};}
 
 // A dove in flight, beak to the right, wing raised with jagged primaries (box 0..100 × 0..60).
@@ -9,7 +11,11 @@ const BIRD_RIBS='M52 24L58 4M50 25L52 6M47 25L45 10M60 37L64 52';
 const BIRD_HATCH='M5 25L17 28M3 29L17 30M6 32L17 31.5';
 
 const DOTS=(id:string,step=48,r=1.6)=>`<pattern id="${id}" width="${step}" height="${step}" patternUnits="userSpaceOnUse"><circle cx="${step/2}" cy="${step/2}" r="${r}" fill="currentColor"/></pattern>`;
-const cross=(x:number,y:number,s=10)=>`<path class="bp-cross" d="M${x-s} ${y}h${s*2}M${x} ${y-s}v${s*2}"/>`;
+const cr=rng(5);
+const cross=(x:number,y:number,s=10)=>`<path class="bp-cross" d="${rule(x-s,y,x+s,y,cr,2,.4)}${rule(x,y-s,x,y+s,cr,2,.4)}"/>`;
+// Construction lines drawn by hand, inked twice (the second pass offset and faint), with cobalt brush accents.
+const sketchy=(lines:string,brushes='')=>`<g class="bp-lines">${lines}</g><g class="bp-lines bp-echo" transform="translate(2.4 1.6)">${lines}</g><g class="bp-brush">${brushes}</g>`;
+const E=(r:()=>number,cx:number,cy:number,rx:number,ry:number,rot=0,cls='')=>`<path${cls?` class="${cls}"`:''} d="${ring(cx,cy,rx,r,1.8,ry/rx)}"${rot?` transform="rotate(${rot} ${cx} ${cy})"`:''}/>`;
 const spec=(x:number,y:number,rows:string[])=>`<g class="bp-spec">${rows.map((r,i)=>`<text x="${x}" y="${y+i*11}">${r}</text>`).join('')}</g>`;
 
 export type BirdSpec={n:number;x:number;y:number;s:number;r:number;flip:boolean};
@@ -30,12 +36,13 @@ export function birdMarkup(b:BirdSpec,interactive:boolean){
 // PV 00:12–00:16 — "羽兽何以飞翔": numbered flock over a dot grid with orbit ellipses and fan lines.
 export function birdPlate(interactive=false,id='bird',count=46){
  const birds=flock(6,count);
- const fan=[1384,1420,1462,1500,1532,1566,1600].map((x,i)=>`M1492 640L${x} ${60+(i%3)*28}`).join('');
+ const r=rng(17);const fan=[1384,1420,1462,1500,1532,1566,1600].map((x,i)=>rule(1492,640,x,60+(i%3)*28,r,8,5)).join('');
  return `<svg class="bp-plate bird-plate" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice" aria-hidden="${!interactive}"><defs>${DOTS(`${id}-dots`)}</defs>
  <rect class="bp-paper" width="1600" height="700"/><rect width="1600" height="700" fill="url(#${id}-dots)" class="bp-grid"/>
  <rect class="bp-block" x="0" y="0" width="112" height="700"/><rect class="bp-paper" x="0" y="200" width="112" height="22"/><rect class="bp-paper" x="0" y="486" width="112" height="22"/>
- <g class="bp-lines"><ellipse cx="300" cy="300" rx="160" ry="330" transform="rotate(-8 300 300)"/><ellipse cx="560" cy="320" rx="210" ry="420" transform="rotate(28 560 320)"/><ellipse cx="460" cy="420" rx="250" ry="300"/><circle cx="1180" cy="340" r="190"/><circle cx="1290" cy="470" r="70"/>
- <path d="M660 90V640"/><circle cx="660" cy="654" r="14"/><circle cx="470" cy="172" r="4"/><path d="M470 176V610"/><path class="bp-fan" d="${fan}"/><path d="M900 350H1080M920 344v12M960 344v12M1000 344v12"/></g>
+ ${sketchy(`${E(r,300,300,160,330,-8)}${E(r,560,320,210,420,28)}${E(r,460,420,250,300)}${E(r,1180,340,190,190)}${E(r,1290,470,70,70)}
+ <path d="${rule(660,90,660,640,r,12,3)}"/>${E(r,660,654,14,14)}<circle cx="470" cy="172" r="4"/><path d="${rule(470,176,470,610,r,10,2.4)}"/><path class="bp-fan" d="${fan}"/><path d="${rule(900,350,1080,350,r,8,1.2)}M920 344v12M960 344v12M1000 344v12"/>`,
+ `<path transform="rotate(28 560 320)" d="${brush(arcPts(560,320,210,-.7,1.2,r,1.4,2),12,.45)}"/><path d="${brush(arcPts(1180,340,190,3.5,5.3,r,1.2),9,.5)}"/><path d="${brush(arcPts(300,300,160,1.9,3.3,r,1,2.06),7,.5)}" transform="rotate(-8 300 300)"/>`)}
  ${cross(405,122)}${cross(1550,212,8)}${cross(1550,560,8)}
  <g class="bp-flock">${birds.map(b=>birdMarkup(b,interactive)).join('')}</g>
  ${spec(845,600,['ORBITAL DRIFT  0.0417','LEADING EDGE   14°  /  AXIS-Y','FLOCK DENSITY  46 / 1099'])}
@@ -44,15 +51,17 @@ export function birdPlate(interactive=false,id='bird',count=46){
 
 // PV 00:24–00:27 — the robed figure on blueprint paper, wings as rotatable feather fans with blue stepped echoes.
 export function angelPlate(interactive=false,id='angel'){
- const feather=(i:number,side:number)=>{const len=150+i*26,w=15+i*1.4;const a=(-4+i*17)*side;return `<g class="bp-feather"${interactive?` data-feather="${side>0?'r':'l'}${i}"`:''} style="--a:${a}deg"><path d="M0 0Q${w} ${-len*.35} 0 ${-len}Q${-w} ${-len*.35} 0 0Z"/><path class="bp-rib" d="M0 -8V${-len+14}"/><text class="bp-num" x="${w+6}" y="${-len*.6}">${side>0?'R':'L'}${i+1}</text></g>`;};
+ const feather=(i:number,side:number)=>{const len=150+i*26,w=15+i*1.4;const a=(-4+i*17)*side;return `<g class="bp-feather"${interactive?` data-feather="${side>0?'r':'l'}${i}"`:''} style="--a:${a}deg"><path class="bp-feather-echo" transform="translate(2.2 1.4) rotate(.8)" d="M0 0Q${w*1.05} ${-len*.33} 0 ${-len-4}Q${-w} ${-len*.37} 0 0Z"/><path d="M0 0Q${w} ${-len*.35} 0 ${-len}Q${-w} ${-len*.35} 0 0Z"/><path class="bp-rib" d="M0 -8V${-len+14}"/><text class="bp-num" x="${w+6}" y="${-len*.6}">${side>0?'R':'L'}${i+1}</text></g>`;};
  const echo=(x:number,y:number,w:number,h:number,flip=1)=>{const teeth=[...Array(Math.ceil(h/14))].map((_,i)=>`L${x+w+(i%2?10:0)*flip} ${y+i*14}`).join('');return [0,1,2].map(k=>`<path class="bp-echo e${k}" transform="translate(${-k*7*flip} ${k*9})" d="M${x} ${y}${teeth}L${x+w} ${y+h}L${x} ${y+h}Z"/>`).join('');};
+ const r=rng(11);
  const wing=(side:number)=>`<g class="bp-wing wing-${side>0?'r':'l'}" transform="translate(${800+side*46} 250)"><g class="bp-wing-fan">${[0,1,2,3,4,5,6].map(i=>feather(i,side)).join('')}</g></g>`;
  return `<svg class="bp-plate angel-plate" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice" aria-hidden="${!interactive}"><defs>${DOTS(`${id}-dots`)}</defs>
  <rect class="bp-paper" width="1600" height="700"/><rect width="1600" height="700" fill="url(#${id}-dots)" class="bp-grid"/>
- <g class="bp-lines"><circle cx="330" cy="300" r="260"/><circle cx="1250" cy="330" r="210"/><circle cx="300" cy="590" r="44"/><circle cx="1180" cy="580" r="28"/><path d="M325 0V700M1270 0V700M0 560H1600"/></g>
+ ${sketchy(`${E(r,330,300,260,260)}${E(r,1250,330,210,210)}${E(r,300,590,44,44)}${E(r,1180,580,28,28)}${E(r,800,104,92,24)}<path d="${rule(325,0,325,330,r,0,3)}${rule(325,350,325,700,r,0,3)}${rule(1270,0,1270,460,r,0,3)}${rule(1270,480,1270,700,r,0,3)}${rule(0,560,700,560,r,0,2)}${rule(720,560,1600,560,r,0,2)}"/>`,
+ `<path d="${brush(arcPts(330,300,260,-1.2,.4,r,1.6),12,.45)}"/><path d="${brush(arcPts(1250,330,210,2.2,3.6,r,1.4),10,.5)}"/><path d="${brush(arcPts(800,104,92,.3,2.8,r,.8,.26),5,.5)}"/>`)}
  <g class="bp-echoes">${echo(210,150,90,190)}${echo(260,330,70,260)}${echo(1080,0,100,150,-1)}${echo(1160,350,70,110,-1)}</g>
  ${wing(-1)}${wing(1)}
- <g class="bp-figure"><ellipse class="bp-halo" cx="800" cy="104" rx="46" ry="11"/><path class="bp-fill" d="M800 128a30 30 0 0 1 30 30q0 26-14 40q50 14 66 66l30 320h-224l30-320q16-52 66-66q-14-14-14-40a30 30 0 0 1 30-30z"/><path class="bp-rib" d="M800 210v330M760 300q40 30 80 0M720 400h160"/>${cross(800,160,14)}</g>
+ <g class="bp-figure"><ellipse class="bp-halo" cx="800" cy="104" rx="46" ry="11"/><path class="bp-fig-echo" transform="translate(4 3)" d="M800 128a30 30 0 0 1 30 30q0 26-14 40q50 14 66 66l30 320h-224l30-320q16-52 66-66q-14-14-14-40a30 30 0 0 1 30-30z"/><path class="bp-fill" d="M800 128a30 30 0 0 1 30 30q0 26-14 40q50 14 66 66l30 320h-224l30-320q16-52 66-66q-14-14-14-40a30 30 0 0 1 30-30z"/><path class="bp-rib" d="M800 210v330M760 300q40 30 80 0M720 400h160"/>${cross(800,160,14)}</g>
  ${spec(735,606,['ICONOGRAPHY  /  SANCTA','HALO RADIUS  46.00','WING SPREAD  [ --open ]'])}
  <text class="bp-title" x="800" y="470">光环之下</text></svg>`;
 }

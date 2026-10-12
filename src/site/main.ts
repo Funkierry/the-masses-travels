@@ -131,7 +131,7 @@ const actions:Record<string,(el:HTMLElement)=>void>={
  home:()=>setPage('home'),about:()=>setPage('about'),works:()=>setPage('works'),skills:()=>setPage('skills'),contact:()=>setPage('contact'),
  blueprint:()=>{blueprint=!blueprint;saveStored('site-blueprint',blueprint);stage.classList.toggle('theme-blueprint',blueprint);$('#blueprint-toggle').classList.toggle('active',blueprint);},
  fullscreen:()=>{void (document.fullscreenElement?document.exitFullscreen():stage.requestFullscreen()).catch(()=>toast('可使用 F11 进入全屏'));},
- 'arc-tag':el=>showFact(+el.dataset.tag!),'work-prev':()=>route.step(-1),'work-next':()=>route.step(1),'route-seq':el=>route.seekStage(+el.dataset.seq!),
+ 'arc-tag':el=>showFact(+el.dataset.tag!),'work-prev':()=>route.step(-1),'work-next':()=>route.step(1),'route-seq':el=>route.seekStage(+el.dataset.seq!),'route-pins-clear':()=>route.clearPins(),
  recall:()=>{document.querySelectorAll('.p0 .flown').forEach(g=>{g.classList.remove('flown');g.classList.add('returning');});released.clear();countTo($('#skill-count'),0);},
  part:()=>{covenant.reset();$('#contact-card').classList.remove('visible');},reveal:()=>reveal(),
  'copy-mail':()=>{void navigator.clipboard?.writeText(P.contact.email).then(()=>toast('邮箱已复制'),()=>toast(P.contact.email));}

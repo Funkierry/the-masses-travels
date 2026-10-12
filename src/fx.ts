@@ -68,7 +68,8 @@ export function burst(layer:HTMLElement,kind:Burst,accent='#3a5bc2'){
  for(let i=0;i<3;i++)parts.push(markFrame(r,accent).replace('class="fx-frame"',`class="fx-frame" style="--f:${i}"`));
  if(kind==='mosaic')for(let i=0;i<10;i++){const s=1.2+r()*3.4;parts.push(`<i class="fx-block" style="left:${(30+r()*65).toFixed(1)}%;top:${(r()*90).toFixed(1)}%;width:${s.toFixed(1)}vw;height:${(s*(.3+r()*.6)).toFixed(1)}vw;background:${['var(--ink)','var(--cobalt)',accent,'#d5dadb'][Math.floor(r()*4)]};--f:${Math.floor(r()*3)}"></i>`);}
  layer.innerHTML=parts.join('');layer.className=`fx-${kind} run`;
- window.setTimeout(()=>{layer.className='';layer.innerHTML='';},900);
+ // Cleared only after the slowest fade has finished, so nothing is cut off mid-frame.
+ clearTimeout(Number(layer.dataset.timer??0));layer.dataset.timer=String(window.setTimeout(()=>{layer.className='';layer.innerHTML='';},1600));
 }
 
 // Construction lines that join the pointer to the nearest joints, after the "Creation" frames at PV 00:45.

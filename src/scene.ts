@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Reflector } from 'three/addons/objects/Reflector.js';
-import { buildSanctum, materials, GROUPS, NAVE, type Part } from './sanctum.ts';
+import { buildSanctum, materials, GROUPS, NAVE, KEYPOINTS, type Part } from './sanctum.ts';
 
 export type SceneMode='home'|'faith'|'city'|'operator'|'sanctum';
 export type GroupReport={valid:boolean;parts:number;triangles:number;size:[number,number,number];materials:string[];symmetric:boolean;offset:number;grounded:boolean;travel:number;floating:number};
@@ -16,7 +16,7 @@ export class World {
  orbitTarget=new THREE.Vector3(); resizeObserver:ResizeObserver; focus=-1; hover=-1; section=0; reports:GroupReport[]=[];
  clip=new THREE.Plane(new THREE.Vector3(-1,0,0),60); raycaster=new THREE.Raycaster(); fly:{pos:THREE.Vector3;target:THREE.Vector3;t:number}|null=null;
  onStats?:(fps:number)=>void; frameCount=0; fpsClock=0; snap=false;
- // A film shot drives the camera directly: from → to over p (0..1).
+ beam:THREE.Group|null=null; beamOn=false; beamT=0; lightView=false;
  get exploded(){return this.explodeTarget>.5;}
  set exploded(v:boolean){this.explodeTarget=v?1:0;}
  constructor(public container:HTMLElement){
@@ -89,6 +89,21 @@ export class World {
   const dir=new THREE.Vector3(.85,.5,1).normalize();const pos=c.clone().addScaledVector(dir,Math.max(9,s*.85));pos.y=Math.max(pos.y,2);
   this.orbitTarget.copy(c);this.inspect=true;this.controls.enabled=true;this.container.classList.add('inspect');this.fly={pos,target:c,t:0};
  }
+ // Screen position (px in the container) of a world point; front is false behind the camera.
+ project(p:THREE.Vector3){const v=p.clone().project(this.camera);return {x:(v.x+1)/2*this.container.clientWidth,y:(1-v.y)/2*this.container.clientHeight,front:v.z<1};}
+ box(i:number){return new THREE.Box3().setFromObject(this.groups[i]);}
+ // The light path: a beam that grows from the gate through the basin and the rose up to the veil's eye.
+ setBeam(on:boolean){
+  this.beamOn=on;this.beamT=0;
+  if(on&&!this.beam){
+   const curve=new THREE.CatmullRomCurve3(KEYPOINTS.map(k=>new THREE.Vector3(...k.pos)),false,'catmullrom',.2);this.beam=new THREE.Group();
+   for(const [r,o,c] of [[.16,.95,'#e8eeff'],[.55,.3,'#7f9cff'],[1.4,.1,'#5b7ff0']] as const){const m=new THREE.Mesh(new THREE.TubeGeometry(curve,160,r,10,false),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));m.userData.peak=o;this.beam.add(m);}
+   for(const k of KEYPOINTS){const s=new THREE.Mesh(new THREE.SphereGeometry(.6,16,12),new THREE.MeshBasicMaterial({color:'#dfe7ff',transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));s.position.set(...k.pos);s.userData.peak=.8;s.userData.glow=true;this.beam.add(s);}
+   this.scene.add(this.beam);
+  }
+  if(this.beam)this.beam.visible=on;
+  if(!on)this.setFocus(this.focus);
+ }
  groupProgress(g:number){return smooth(this.split*(1+STAGGER*(GROUPS.length-1))-STAGGER*g);}
  render(dt:number,t:number,dark=false){
   if(!this.enabled)return;this.clock+=this.reduced?0:Math.min(dt,.05);this.targetTheme=dark?1:0;this.theme=THREE.MathUtils.damp(this.theme,this.targetTheme,4,dt);
@@ -112,11 +127,18 @@ export class World {
    const city=this.mode==='city',sanctum=this.mode==='sanctum',op=this.mode==='operator';
    // Overview: the whole sanctum from the entrance side, pulling back as it opens.
    const back=1+this.split*.32;
-   const desired=isFaith?new THREE.Vector3(0,8,30):sanctum&&this.overview?new THREE.Vector3(50*back,30*back,56*back):sanctum?new THREE.Vector3(0,4.5,23-(t-96.5)*.26):city?new THREE.Vector3(20,13,30):op?new THREE.Vector3(16,9,26):new THREE.Vector3(23,10,29);
-   const target=sanctum&&this.overview?new THREE.Vector3(0,17+this.split*5,-16):sanctum?new THREE.Vector3(0,8,-24):isFaith?new THREE.Vector3(0,7,-6):new THREE.Vector3(-3,6,-9);
-   if(!this.reduced){desired.x+=this.pointer.x*(this.overview?3:.8);desired.y+=this.pointer.y*.3;}
+   // The light path is framed side-on so the gate, the basin, the rose and the eye are all in view.
+   const lv=sanctum&&this.lightView;
+   const desired=lv?new THREE.Vector3(96,21,-14):isFaith?new THREE.Vector3(0,8,30):sanctum&&this.overview?new THREE.Vector3(50*back,30*back,56*back):sanctum?new THREE.Vector3(0,4.5,23-(t-96.5)*.26):city?new THREE.Vector3(20,13,30):op?new THREE.Vector3(16,9,26):new THREE.Vector3(23,10,29);
+   const target=lv?new THREE.Vector3(0,18,-24):sanctum&&this.overview?new THREE.Vector3(0,17+this.split*5,-16):sanctum?new THREE.Vector3(0,8,-24):isFaith?new THREE.Vector3(0,7,-6):new THREE.Vector3(-3,6,-9);
+   if(!this.reduced&&!lv){desired.x+=this.pointer.x*(this.overview?3:.8);desired.y+=this.pointer.y*.3;}
    const k=this.snap?1:1-Math.exp(-dt*2);this.camera.position.lerp(desired,k);this.orbitTarget.lerp(target,k);this.camera.lookAt(this.orbitTarget);
   }else this.controls.update();
+  if(this.beam&&this.beamOn){this.beamT+=dt;const grow=smooth(this.beamT/1.8),pulse=.8+.2*Math.sin(this.clock*3.2);
+   for(const m of this.beam.children as THREE.Mesh[]){const mat=m.material as THREE.MeshBasicMaterial;mat.opacity=m.userData.peak*pulse*(m.userData.glow?smooth(this.beamT/1.8-.2):grow);
+    if(!m.userData.glow&&m.geometry.index)m.geometry.setDrawRange(0,Math.floor(m.geometry.index.count*grow/6)*6);else if(m.userData.glow)m.scale.setScalar(1+.25*Math.sin(this.clock*4+m.position.y));}
+   // The lavender glass catches the light as it passes.
+   for(const p of this.parts){const mat=p.mesh.material as THREE.MeshStandardMaterial;if(mat.name==='lavender')mat.emissiveIntensity=mat.userData.emissiveIntensity+grow*.9*pulse;}}
   this.renderer.render(this.scene,this.camera);
   this.frameCount++;this.fpsClock+=dt;if(this.fpsClock>1){this.onStats?.(Math.round(this.frameCount/this.fpsClock));this.fpsClock=0;this.frameCount=0;}
  }

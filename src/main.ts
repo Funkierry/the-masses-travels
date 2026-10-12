@@ -6,6 +6,7 @@ import { wrap } from './util.ts';
 import { readStored, saveStored } from './storage.ts';
 import { World } from './scene.ts';
 import { GROUPS } from './sanctum.ts';
+import { SanctumOverlay } from './overlay.ts';
 import { rng } from './graphics.ts';
 import { personnelPlate, homePlate, recordPlate, svgImage, PAGE, type PlateTheme } from './plates.ts';
 import { Reticle, NodeField, scramble, burst, ripple, morphGlyph, type Burst } from './fx.ts';
@@ -58,8 +59,8 @@ app.innerHTML=resolveMarkupAssets(`
  </section>
  <section id="records" class="screen hidden" aria-label="行迹地图"></section>
  <section id="atlas" class="screen hidden" aria-label="羽兽图谱"></section>
- <section id="sanctum" class="screen hidden" aria-label="圣堂空间"><div class="sanctum-heading"><span class="eyebrow" data-scramble>THE ARCHITECTURE OF FAITH</span><h2>圣堂</h2><p>每一道弧线，都通往同一束光。</p></div>
-  <div class="sanctum-tools"><button class="line-button" id="inspect-toggle" data-action="inspect">${icon('full')} 360° 漫游</button><button class="line-button" id="explode-toggle" data-action="explode">${icon('layers')} 结构展开</button><button class="line-button" data-action="explode-play">逐层展开 ▶</button><button class="line-button" data-action="reset-view">${icon('reset')} 复位</button></div>
+ <section id="sanctum" class="screen hidden" aria-label="圣堂空间"><div id="sanctum-overlay" class="sanctum-overlay"></div><div class="sanctum-heading"><span class="eyebrow" data-scramble>THE ARCHITECTURE OF FAITH</span><h2>圣堂</h2><p>每一道弧线，都通往同一束光。</p></div>
+  <div class="sanctum-tools"><button class="line-button" id="inspect-toggle" data-action="inspect">${icon('full')} 360° 漫游</button><button class="line-button" id="explode-toggle" data-action="explode">${icon('layers')} 结构展开</button><button class="line-button" data-action="explode-play">逐层展开 ▶</button><button class="line-button" id="light-toggle" data-action="light-path">✦ 光路</button><button class="line-button" data-action="reset-view">${icon('reset')} 复位</button></div>
   <div class="sanctum-sliders"><label><span>展开</span><input type="range" id="explode-range" min="0" max="100" value="0" aria-label="结构展开程度"><b id="explode-value">0%</b></label><label><span>剖切</span><input type="range" id="section-range" min="0" max="100" value="0" aria-label="剖切位置"><b id="section-value">—</b></label></div>
   <div class="structure-list"><small>ARCHITECTURAL ANATOMY · ${GROUPS.length}</small>${GROUPS.map((g,i)=>`<button data-action="sanctum-part" data-part="${i}" data-cursor="${g.en}"><span>0${i+1}</span><b>${g.name}<em>${g.en}</em></b><i></i></button>`).join('')}<button class="check-all" data-action="sanctum-check" id="sanctum-check">逐项检查 ▶</button></div>
   <aside class="sanctum-report" id="sanctum-report" aria-live="polite"></aside>
@@ -80,11 +81,18 @@ try{world=new World($('#world'));if(still)world.snap=true;world.reduced=!setting
 // The activity's system theme plays while sound is on.
 const bgm=new Audio(assetUrl('game/bgm-sys.mp3'));bgm.loop=true;bgm.preload='none';
 function syncBgm(){bgm.volume=settings.volume*.55;if(settings.sound&&settings.bgm&&!document.hidden){if(bgm.paused)void bgm.play().catch(()=>{});}else bgm.pause();}
+const HINT='点击建筑或右侧列表检查结构 · 漫游时拖动旋转 · 滚轮缩放 · 右键平移';
+const LIGHT_HINT='光路 · 光自门而入，先落于水，再穿花窗，终至其眼 —— 依次点击四个光点';
+const overlay=world?new SanctumOverlay($('#sanctum-overlay'),world):null;
+if(overlay){overlay.onStep=i=>{tickSound(820+i*160);};overlay.onMiss=()=>{tickSound(260);toast('顺序不对 · 光路断开，重新开始');};overlay.onSolve=()=>{tickSound(1500);toast('光路贯通 · THE LIGHT PASSES');$('#sanctum-hint').textContent='光路已贯通 · 再按「光路」收起';};}
+function setLight(on:boolean){if(!overlay)return toast('此浏览器未能启用 WebGL');if(on){exitInspect();if(world)world.overview=true;}overlay.setLight(on);$('#light-toggle').classList.toggle('active',on);$('#sanctum-hint').textContent=on?LIGHT_HINT:HINT;}
 const reticle=new Reticle(stage),field=new NodeField($<HTMLCanvasElement>('#node-field'));
 const route=new RouteMap($('#records'),visited,()=>bookmarks,()=>saveStored('visited',[...visited]));
+route.onFigure=label=>{tickSound(1300);toast(`图形闭合 · ${label}`);};
 let sfx:AudioContext|null=null;
 function tickSound(pitch=700){if(!settings.sound)return;try{sfx??=new AudioContext();if(sfx.state==='suspended')void sfx.resume();const o=sfx.createOscillator(),g=sfx.createGain();o.type='sine';o.frequency.setValueAtTime(pitch,sfx.currentTime);o.frequency.exponentialRampToValueAtTime(pitch*.47,sfx.currentTime+.07);g.gain.setValueAtTime(.027*settings.volume,sfx.currentTime);g.gain.exponentialRampToValueAtTime(.001,sfx.currentTime+.12);o.connect(g);g.connect(sfx.destination);o.start();o.stop(sfx.currentTime+.13);}catch{}}
 const atlas=new Atlas($('#atlas'),()=>tickSound(980));
+atlas.onFigure=label=>{tickSound(1300);toast(`图形闭合 · ${label}`);};
 function persist(){if(!still)saveStored('settings',settings);route.seq.reduced=!settings.motion;document.documentElement.dataset.reduced=settings.motion?'0':'1';stage.classList.toggle('reduced-motion',!settings.motion);stage.classList.toggle('theme-blueprint',settings.blueprint);$('#blueprint-toggle').classList.toggle('active',settings.blueprint);$('#blueprint-toggle').setAttribute('aria-pressed',String(settings.blueprint));world&&(world.reduced=!settings.motion);$('#sound-toggle').innerHTML=icon(settings.sound?'sound':'mute');$('#sound-toggle').setAttribute('aria-label',settings.sound?'关闭声音':'开启声音');$('#sound-toggle').setAttribute('aria-pressed',String(settings.sound));syncBgm();}
 const burstFor:Record<Mode,Burst>={home:'wipe',operators:'mosaic',records:'scan',atlas:'scan',sanctum:'wipe'};
 function transition(kind:Burst=burstFor[mode]){if(!settings.motion)return;clearTimeout(transitionTimer);stage.classList.remove('transitioning');void stage.offsetWidth;stage.classList.add('transitioning');burst($('#transition-fx'),kind,getComputedStyle(stage).getPropertyValue('--accent').trim()||'#2448d8');transitionTimer=window.setTimeout(()=>stage.classList.remove('transitioning'),850);}
@@ -126,6 +134,7 @@ function setMode(next:Mode,animate=true){
  if(next==='operators'){$('#operators').classList.remove('hidden');world?.setMode('operator');renderOperator(true);}
  if(next==='records'){$('#records').classList.remove('hidden');world?.setMode('city');route.enter();}
  if(next==='atlas'){$('#atlas').classList.remove('hidden');world?.setMode('faith');atlas.enter();}
+ if(next!=='sanctum'&&overlay?.mode==='light')setLight(false);
  if(world)world.overview=next==='sanctum';$('#world').classList.toggle('pickable',next==='sanctum');if(next!=='sanctum'){stopTour();$('#sanctum-report').classList.remove('visible');stage.classList.remove('sanctum-focus');}
  if(next==='sanctum'){$('#sanctum').classList.remove('hidden');world?.setMode('sanctum');updateWorldControls();}
  const incoming=document.querySelector<HTMLElement>('.screen:not(.hidden)');activeScreen=incoming;
@@ -144,7 +153,10 @@ function renderOperator(animate=false){
  $('#op-role').innerHTML=`<strong>${o.role} · ${o.branch}</strong><small>${o.roleEn}</small>`;
  $('#op-quote').textContent=`“${o.quote}”`;
  // The personnel plate stands where artwork used to: layers assemble in depth order on every change.
- const host=$('#operator-art');host.innerHTML=personnelPlate(o,operatorIndex,PAGE,alt);host.classList.toggle('alt',alt);if(animate&&settings.motion){host.classList.remove('assemble');void host.offsetWidth;host.classList.add('assemble');}
+ // The new plate is laid over the old one, which fades out, so large colour fields never blink off and on.
+ const host=$('#operator-art'),old=host.querySelector<HTMLElement>('.plate');host.insertAdjacentHTML('beforeend',personnelPlate(o,operatorIndex,PAGE,alt));host.classList.toggle('alt',alt);
+ if(old){if(animate&&settings.motion){old.classList.add('leaving');window.setTimeout(()=>old.remove(),800);}else old.remove();}host.querySelectorAll('.plate.leaving').forEach((p,i,all)=>{if(i<all.length-1)p.remove();});
+ if(animate&&settings.motion){host.classList.remove('assemble');void host.offsetWidth;host.classList.add('assemble');}
  $('#operator-number').textContent=`0${operatorIndex+1}`;$('#alt-toggle').textContent=alt?'版式 A':'版式 B';$('#alt-toggle').classList.toggle('active',alt);
  $('#bookmark-toggle').classList.toggle('active',bookmarks.has(o.id));$('#bookmark-toggle').innerHTML=`${icon('star')} ${bookmarks.has(o.id)?'已收藏':'收藏'}`;
  document.querySelectorAll<HTMLButtonElement>('[data-op]').forEach(b=>{b.classList.toggle('active',Number(b.dataset.op)===operatorIndex);b.setAttribute('aria-pressed',String(Number(b.dataset.op)===operatorIndex));});
@@ -167,7 +179,7 @@ function updateWorldControls(){if(!world)return;$('#inspect-toggle').classList.t
 // Structural inspection: fly to one structure, ghost the rest and list what was checked.
 const checkedParts=new Set<number>();let tourTimer=0,explodeTimer=0;
 function inspectPart(i:number){
- if(!world)return toast('此浏览器未能启用 WebGL');i=wrap(i,GROUPS.length);world.inspectGroup(i);checkedParts.add(i);const g=GROUPS[i],r=world.reports[i];
+ if(!world)return toast('此浏览器未能启用 WebGL');if(overlay?.mode==='light')setLight(false);i=wrap(i,GROUPS.length);world.inspectGroup(i);checkedParts.add(i);const g=GROUPS[i],r=world.reports[i];
  const row=(ok:boolean|null,label:string,value:string)=>`<li class="${ok===null?'info':ok?'ok':'warn'}"><i>${ok===null?'·':ok?'✓':'△'}</i>${label}<b>${value}</b></li>`;
  $('#sanctum-report').innerHTML=`<div class="sr-head"><span class="sr-code">S-0${i+1}</span><b>${g.name}</b><button data-action="sanctum-exit" aria-label="结束检查">✕</button></div><p class="sr-en">${g.en}</p><p class="sr-desc">${g.desc}</p>
   <ul class="sr-checks">${row(r.parts>0,'构件',`${r.parts} 件`)}${row(r.triangles<60000,'三角面',r.triangles.toLocaleString())}${row(null,'外形尺寸',`${r.size[0]} × ${r.size[1]} × ${r.size[2]} m`)}${row(r.valid,'几何有效',r.valid?'无空网格 · 坐标正常':'存在异常')}${g.sym?row(r.symmetric,'左右对称',r.symmetric?'对称':`偏移 ${r.offset} m`):row(null,'左右对称','不要求 · 自由布置')}${g.support==='ground'?row(r.grounded,'支撑',r.grounded?'落地':'未落地'):g.support==='float'?row(!r.grounded,'支撑',r.grounded?'接触地面':'悬浮'):row(null,'支撑',g.support==='piers'?'承于束柱':'承于连拱')}${row(r.travel>0,'展开位移',`最大 ${r.travel} m`)}${row(null,'材质',r.materials.join(' · '))}${r.floating?row(null,'浮动构件',`${r.floating} 件`):''}</ul>
@@ -175,7 +187,7 @@ function inspectPart(i:number){
  $('#sanctum-report').classList.remove('swap');void $('#sanctum-report').offsetWidth;$('#sanctum-report').classList.add('visible','swap');stage.classList.add('sanctum-focus');
  $('#sanctum-hint').textContent=`正在检查 ${g.name} · 已检查 ${checkedParts.size} / ${GROUPS.length} · Esc 结束`;updateWorldControls();
 }
-function exitInspect(){stopTour();world?.inspectGroup(-1);$('#sanctum-report').classList.remove('visible');stage.classList.remove('sanctum-focus');$('#sanctum-hint').textContent='点击建筑或右侧列表检查结构 · 漫游时拖动旋转 · 滚轮缩放 · 右键平移';updateWorldControls();}
+function exitInspect(){stopTour();world?.inspectGroup(-1);$('#sanctum-report').classList.remove('visible');stage.classList.remove('sanctum-focus');$('#sanctum-hint').textContent=overlay?.mode==='light'?LIGHT_HINT:HINT;updateWorldControls();}
 function stopTour(){clearInterval(tourTimer);tourTimer=0;$('#sanctum-check').classList.remove('active');$('#sanctum-check').textContent='逐项检查 ▶';}
 function startTour(){if(tourTimer)return stopTour();let i=0;inspectPart(0);$('#sanctum-check').classList.add('active');$('#sanctum-check').textContent='停止检查 ■';tourTimer=window.setInterval(()=>{i++;if(i>=GROUPS.length){stopTour();toast(`${GROUPS.length} 组结构检查完成`);return;}inspectPart(i);},3400);}
 function playExplode(){if(!world)return;clearInterval(explodeTimer);world.split=0;world.explodeTarget=0;let v=0;explodeTimer=window.setInterval(()=>{v=Math.min(1,v+.012);world!.explodeTarget=v;updateWorldControls();if(v>=1)clearInterval(explodeTimer);},40);}
@@ -202,12 +214,12 @@ const actions:Record<string,(el:HTMLElement)=>void>={
  'close-modal':closeModal,
  'export-record':()=>{const o=operators[operatorIndex];const b=new Blob([JSON.stringify({name:o.name,english:o.english,role:o.role,branch:o.branch,stars:o.stars,tags:o.tags,quote:o.quote,editorialNote:o.note},null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=`${o.id}-record.json`;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('记录已导出');},
  inspect:()=>{if(!world)return toast('此浏览器未能启用 WebGL');world.setInspect(!world.inspect);updateWorldControls();},explode:()=>{if(!world)return;clearInterval(explodeTimer);world.exploded=!world.exploded;updateWorldControls();},'reset-view':()=>{clearInterval(explodeTimer);exitInspect();world?.reset();$<HTMLInputElement>('#section-range').value='0';updateWorldControls();},
- 'explode-play':()=>playExplode(),'sanctum-part':el=>{stopTour();inspectPart(+el.dataset.part!);},'sanctum-exit':()=>exitInspect(),'sanctum-check':()=>startTour(),'sanctum-prev':()=>{stopTour();inspectPart((world?.focus??0)-1);},'sanctum-next':()=>{stopTour();inspectPart((world?.focus??0)+1);},
- 'route-seq':el=>route.seekStage(+el.dataset.seq!),'route-prev':()=>route.step(-1),'route-next':()=>route.step(1),
+ 'explode-play':()=>playExplode(),'light-path':()=>setLight(overlay?.mode!=='light'),'sanctum-part':el=>{stopTour();inspectPart(+el.dataset.part!);},'sanctum-exit':()=>exitInspect(),'sanctum-check':()=>startTour(),'sanctum-prev':()=>{stopTour();inspectPart((world?.focus??0)-1);},'sanctum-next':()=>{stopTour();inspectPart((world?.focus??0)+1);},
+ 'route-seq':el=>route.seekStage(+el.dataset.seq!),'route-pins-clear':()=>route.clearPins(),'route-prev':()=>route.step(-1),'route-next':()=>route.step(1),
  'route-open':()=>{const n=routeNodes[route.selected];if(n.operator!==undefined)selectOperator(n.operator);},
  'route-save':()=>{const n=routeNodes[route.selected];const id=n.record!==undefined?records[n.record].id:n.operator!==undefined?operators[n.operator].id:'';if(id)toggleBookmark(id);},
  'atlas-plate':el=>{atlas.setPlate(+el.dataset.plate!);transition('scan');},'atlas-recall':()=>atlas.recall(),'atlas-invert':()=>{const on=$('.atlas-stage').classList.toggle('inverted');$('#atlas-invert').classList.toggle('active',on);},
- 'atlas-measure':()=>{const on=$('.atlas-stage').classList.toggle('measure');$('#atlas-measure').classList.toggle('active',on);},'atlas-clear':()=>{document.querySelectorAll('.atlas-stage .lit').forEach(f=>f.classList.remove('lit'));atlas.lit.clear();},
+ 'atlas-measure':()=>{const on=$('.atlas-stage').classList.toggle('measure');$('#atlas-measure').classList.toggle('active',on);},'atlas-clear':()=>{document.querySelectorAll('.atlas-stage .lit').forEach(f=>f.classList.remove('lit'));atlas.lit.clear();atlas.clearNotes();},
  'arc-tag':el=>showArcTag(+el.dataset.tag!),glyph:el=>collect(el),
  'covenant-reset':()=>atlas.covenant.reset(),'covenant-lines':el=>{atlas.covenant.lines=!atlas.covenant.lines;el.classList.toggle('active',atlas.covenant.lines);},
  card:()=>cardModal(),'card-theme':()=>{cardTheme=(cardTheme+1)%CARD_THEMES.length;void drawCard();},'card-download':()=>downloadCard()
@@ -222,7 +234,7 @@ stage.addEventListener('pointermove',e=>{
 });
 document.addEventListener('keydown',e=>{
  const input=e.target instanceof HTMLInputElement||e.target instanceof HTMLTextAreaElement||e.target instanceof HTMLSelectElement;
- if(e.key==='Escape'){e.preventDefault();if(modalOpen)closeModal();else if(mode==='sanctum'&&world&&world.focus>=0)exitInspect();else if(mode!=='home')setMode('home');return;}
+ if(e.key==='Escape'){e.preventDefault();if(modalOpen)closeModal();else if(mode==='sanctum'&&overlay?.mode==='light')setLight(false);else if(mode==='sanctum'&&world&&world.focus>=0)exitInspect();else if(mode!=='home')setMode('home');return;}
  if(modalOpen&&e.key==='Tab'){const root=$('.dialog');const focus=[...root.querySelectorAll<HTMLElement>('button:not([disabled]),input,select,a')].filter(el=>el.offsetParent!==null);if(!focus.length)return;const first=focus[0],last=focus[focus.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}return;}
  if(!input&&(e.key==='Enter'||e.key===' ')&&(e.target as HTMLElement).matches?.('.glyph.key')){e.preventDefault();collect(e.target as HTMLElement);return;}
  if(input||modalOpen||e.ctrlKey||e.metaKey)return;
@@ -291,10 +303,10 @@ $<HTMLInputElement>('#section-range').addEventListener('input',e=>{world?.setSec
 if(world){const cv=world.renderer.domElement;let down:{x:number;y:number}|null=null;let pickQueued:PointerEvent|null=null;
  const ndc=(e:PointerEvent)=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height*2-1)] as const;};
  cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
- cv.addEventListener('pointerup',e=>{if(mode!=='sanctum'||!down)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(moved>5)return;const i=world!.pick(...ndc(e));if(i>=0){stopTour();tickSound(900);inspectPart(i);}});
- cv.addEventListener('pointermove',e=>{if(mode!=='sanctum')return;if(!pickQueued)requestAnimationFrame(()=>{const ev=pickQueued!;pickQueued=null;const i=world!.pick(...ndc(ev));world!.setHover(i);const tip=$('#sanctum-hover');if(i>=0&&i!==world!.focus){tip.textContent=`0${i+1} · ${GROUPS[i].name}`;tip.style.transform=`translate(${ev.clientX+14}px,${ev.clientY+12}px)`;tip.classList.add('visible');}else tip.classList.remove('visible');document.querySelectorAll<HTMLElement>('[data-part]').forEach(b=>b.classList.toggle('hot',(+b.dataset.part!)===i));});pickQueued=e;});
+ cv.addEventListener('pointerup',e=>{if(mode!=='sanctum'||!down||overlay?.mode==='light')return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(moved>5)return;const i=world!.pick(...ndc(e));if(i>=0){stopTour();tickSound(900);inspectPart(i);}});
+ cv.addEventListener('pointermove',e=>{if(mode!=='sanctum'||overlay?.mode==='light')return;if(!pickQueued)requestAnimationFrame(()=>{const ev=pickQueued!;pickQueued=null;const i=world!.pick(...ndc(ev));world!.setHover(i);const tip=$('#sanctum-hover');if(i>=0&&i!==world!.focus){tip.textContent=`0${i+1} · ${GROUPS[i].name}`;tip.style.transform=`translate(${ev.clientX+14}px,${ev.clientY+12}px)`;tip.classList.add('visible');}else tip.classList.remove('visible');document.querySelectorAll<HTMLElement>('[data-part]').forEach(b=>b.classList.toggle('hot',(+b.dataset.part!)===i));});pickQueued=e;});
  cv.addEventListener('pointerleave',()=>{world!.setHover(-1);$('#sanctum-hover').classList.remove('visible');});}
 persist();updateBookmarks();updateWord();if(!openHash())setMode('home',false);
 let worldSkip=false,last=performance.now(),pendingParallax:{x:number;y:number}|null=null;
-function frame(now:number){const dt=Math.min((now-last)/1000,.1);last=now;if(!document.hidden){worldSkip=!worldSkip;if(!modalOpen&&mode!=='atlas'&&mode!=='records'&&(mode==='sanctum'||!worldSkip))world?.render(mode==='sanctum'?dt:dt*2,104,false);reticle.frame(dt);field.frame(settings.motion?dt:0);if(pendingParallax){stage.style.setProperty('--mx',pendingParallax.x.toFixed(3));stage.style.setProperty('--my',pendingParallax.y.toFixed(3));pendingParallax=null;}if(mode==='records')route.frame(dt);if(mode==='atlas')atlas.frame(dt);}requestAnimationFrame(frame);}
+function frame(now:number){const dt=Math.min((now-last)/1000,.1);last=now;if(!document.hidden){worldSkip=!worldSkip;if(!modalOpen&&mode!=='atlas'&&mode!=='records'&&(mode==='sanctum'||!worldSkip)){world?.render(mode==='sanctum'?dt:dt*2,104,false);if(mode==='sanctum')overlay?.frame();}reticle.frame(dt);field.frame(settings.motion?dt:0);if(pendingParallax){stage.style.setProperty('--mx',pendingParallax.x.toFixed(3));stage.style.setProperty('--my',pendingParallax.y.toFixed(3));pendingParallax=null;}if(mode==='records')route.frame(dt);if(mode==='atlas')atlas.frame(dt);}requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
